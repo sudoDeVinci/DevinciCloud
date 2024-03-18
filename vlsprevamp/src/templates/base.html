@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/base.css">
+    <title>{%block title %}Cool Website{% endblock %}</title>
+</head>
+<body>
+    <div class="page-container">
+        <header>
+            <a href="https://www.youtube.com/watch?v=WchseC9aKTU" target="_blank">
+                <img id = "logo" src = "../static/favicon.ico" alt = "slop" width = "125">
+            </a>
+            <h1 id = "title">{% block h1 %}Monitoring System{% endblock %}</h1>
+            <!--A navbar with Many options in a flexbox-->
+            <nav id = "navbar">
+                <ul>
+                    <li><a href="#" target="_blank">Home</a></li>
+                    <li><a href="#" target="_blank">About</a></li>
+                    <li><a href="#" target="_blank">Contact</a></li>
+                    <li><a href="#" target="_blank">Blog</a></li>
+            </nav>
+        </header>
+        <div class="container">
+            <div class="column column1">
+                <h2>Column 1</h2>
+                <p>This is the side page content.</p>
+                <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quam metus, dapibus ut efficitur sagittis, posuere faucibus leo. 
+                    Aliquam in est elementum, elementum enim ut, egestas magna. Sed dignissim erat quis turpis hendrerit auctor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+                    Duis lobortis lacus at odio iaculis, sit amet bibendum orci accumsan. Duis hendrerit nisi felis, sed interdum mauris varius id. Phasellus rhoncus efficitur placerat.
+                    Aliquam dapibus lectus lacus, vel interdum risus maximus vel. Phasellus placerat est odio, et ornare sem commodo non. Nam consequat consequat urna. Nam sed facilisis ex.
+                    Phasellus eu nibh ut purus bibendum euismod rutrum efficitur felis. Integer fringilla odio non neque porttitor tempor. Class aptent taciti sociosqu ad litora torquent per conubia nostra,
+                    per inceptos himenaeos. Nunc sollicitudin, risus in fermentum rutrum, magna elit dapibus elit, lacinia dignissim erat tellus vitae arcu. 
+                    Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Maecenas rutrum luctus feugiat. Donec pulvinar lacus vitae felis suscipit scelerisque.
+                    Donec semper auctor commodo. Aliquam erat volutpat. Quisque mattis sagittis ipsum et auctor. Etiam tempor, ante sit amet pharetra pharetra, dolor risus auctor nisi,
+                    non sagittis magna arcu eu augue. Maecenas pulvinar risus odio, vitae tincidunt velit pulvinar non. Morbi ornare tincidunt arcu eget posuere. 
+                    Integer vestibulum ornare neque non volutpat. Aliquam eu sem non sapien pellentesque dictum. Integer eget consequat sem. Praesent lectus mauris,
+                    nterdum quis sagittis id, bibendum quis mi. </p>
+            </div>
+            <div class="column middle">
+                <h2>Column 2</h2>
+                <p>This is the content of Column 2.</p>
+                <p>This is the main page content</p>
+                <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quam metus, dapibus ut efficitur sagittis, posuere faucibus leo. 
+                    Aliquam in est elementum, elementum enim ut, egestas magna. Sed dignissim erat quis turpis hendrerit auctor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+                    Duis lobortis lacus at odio iaculis, sit amet bibendum orci accumsan. Duis hendrerit nisi felis, sed interdum mauris varius id. Phasellus rhoncus efficitur placerat.
+                    Aliquam dapibus lectus lacus, vel interdum risus maximus vel. Phasellus placerat est odio, et ornare sem commodo non. Nam consequat consequat urna. Nam sed facilisis ex.
+                    Phasellus eu nibh ut purus bibendum euismod rutrum efficitur felis. Integer fringilla odio non neque porttitor tempor.</p>
+            </div>
+            <div class="column column3">
+                <h2>Column 3</h2>
+                <p>This is the side page content</p>
+                <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quam metus, dapibus ut efficitur sagittis, posuere faucibus leo. 
+                    Aliquam in est elementum, elementum enim ut, egestas magna. Sed dignissim erat quis turpis hendrerit auctor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+                    Duis lobortis lacus at odio iaculis, sit amet bibendum orci accumsan. Duis hendrerit nisi felis, sed interdum mauris varius id. Phasellus rhoncus efficitur placerat.
+                    Aliquam dapibus lectus lacus, vel interdum risus maximus vel. Phasellus placerat est odio, et ornare sem commodo non. Nam consequat consequat urna. Nam sed facilisis ex.
+                    Phasellus eu nibh ut purus bibendum euismod rutrum efficitur felis. Integer fringilla odio non neque porttitor tempor.</p>
+            </div>
+        </div>
+        
+        <footer>
+            <a href="" target="_blank">
+                <img id = "vlsp_logo" src = "../static/vlsp_logo.png" alt = "slop" width = "125">
+            </a>
+            <p>This is the footer.</p>
+        </footer>
+    </div>
+    
+</body>
+</html>

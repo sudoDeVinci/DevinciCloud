@@ -1,0 +1,4 @@
+[firmware]
+path="\\onboard\\build\\esp32.esp32.esp32s3\\onboard.ino.bin"
+version="0.0.1.0"
+sha256=""

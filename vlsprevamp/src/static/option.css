@@ -11,3 +11,7 @@
     transition: all ease-in-out 550ms;
     text-decoration: none !important;
 }
+
+.form {
+    padding-top: 2rem;
+}

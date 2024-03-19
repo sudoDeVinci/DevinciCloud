@@ -13,6 +13,8 @@ if __name__ == "__main__":
         if (not DeviceService.exists("34:85:18:41:EB:78")): DeviceService.add("34:85:18:41:EB:78", "Work-ESP", "ESP32S3", "OV5640", 173.00, 56.853470, 14.824620)
         if (not DeviceService.exists("34:85:18:41:59:14")): DeviceService.add("34:85:18:41:59:14", "ESP001", "ESP32S3", "OV5640", 173.00, 56.853470, 14.824620)
     except Exception as e:
-            debug(e)
+        debug(e)
         
-app.run(host='0.0.0.0', port=8080, debug=True)
+    from waitress import serve
+        
+    serve(app, host="192.168.8.57", port = 8080)

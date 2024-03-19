@@ -100,7 +100,8 @@ nav ul li a:hover::before {
 #logo {
     float: left;
     transition: all 0.25s ease;
-    border-radius: 15%;
+    padding: 0.2rem 0.2rem;
+    border-radius: 60%;
     opacity: 90%;
     margin: 1rem 0 1rem 3rem;
     border: 0.2rem solid var(--font-color);
@@ -110,18 +111,6 @@ nav ul li a:hover::before {
     border-radius: 5%;
     opacity: 100%;
     border: 0.2rem solid var(--main-hover-color);
-}
-
-#footer_logo {
-    transition: all 0.25s ease;
-    border-radius: 15%;
-    opacity: 80%;
-    padding-bottom: 1rem;
-}
-
-#footer_logo:hover {
-    border-radius: 5%;
-    opacity: 100%;
 }
 
 
@@ -171,6 +160,18 @@ footer {
     font-weight: 600;
 }
 
+#footer_logo {
+    transition: all 0.25s ease;
+    border-radius: 15%;
+    opacity: 90%;
+    padding-bottom: 1rem;
+}
+
+#footer_logo:hover {
+    border-radius: 5%;
+    opacity: 100%;
+}
+
 /* Media query to wrap flex items at a specific width */
 @media screen and (max-width: 768px) {
     .contain {
@@ -185,4 +186,14 @@ footer {
     .middle {
         flex-basis: 100%; /* Ensure the middle column takes up 100% width when wrapping */
     }
+}
+
+@media screen and (min-width: 1080px) {
+    .contain {
+        flex-wrap: nowrap;
+        max-width: 1440px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
 }

@@ -1,0 +1,16 @@
+Scripts/*
+Lib/*
+bin/*
+lib/*
+lib64/*
+
+*.toml
+*.cfg
+*.nbc
+*.nbi
+*.pyc
+*.crt
+*.pem
+
+lib64
+*__pycache__*

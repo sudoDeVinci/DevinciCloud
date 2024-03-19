@@ -2,7 +2,6 @@ from flask import Flask
 
 def create_app():
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = "AMONGUS"
 
     from src.views import views
     from src.auth import auth

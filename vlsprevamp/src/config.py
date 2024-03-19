@@ -59,6 +59,7 @@ def mkdir(folder:str) -> str:
     if not os.path.exists(folder): os.makedirs(folder)
     return folder
 
+ROOT = f"{os.getcwd()}/src"
 
 # Database related folders
 db_schema_folder = mkdir('schemas')

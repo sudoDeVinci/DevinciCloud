@@ -7,7 +7,7 @@ class Manager:
     Static Database Manager.
     """
     __conn:mysql.MySQLConnection = None
-    __config_path:str = "db_cfg.toml"
+    __config_path:str = f"{ROOT}/db_cfg.toml"
 
     @staticmethod
     def get_conn():

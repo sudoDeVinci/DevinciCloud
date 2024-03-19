@@ -2,6 +2,8 @@ from src.handlers import *
 
 api = Blueprint("api", __name__) 
 
+
+
 @api.route("/update", methods=["GET"])
 def update() -> Response:
     """

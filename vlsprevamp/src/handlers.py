@@ -1,4 +1,4 @@
-from flask import Blueprint, request, Response, render_template, jsonify
+from flask import Blueprint, Request, request, Response, render_template, make_response, send_file,jsonify
 from src.config import *
 from src.db.Services import *
 
@@ -59,3 +59,11 @@ def timestamp_to_path(timestamp:str) -> str:
     timestamp = timestamp.replace(" ", "-")
     timestamp = timestamp.replace(":", "-")
     return timestamp
+
+def header_check(request: Request) -> Request | None:
+    timestamp = request.headers.get('timestamp')
+    mac = request.headers.get('MAC-Address')
+    if not mac: return jsonify({"error": "Mac Address header is missing"}), 400
+    if not timestamp: return jsonify({"error": "Timestamp header is missing"}), 400
+    if mac_filter(mac): return jsonify({"error": "Unauthorized"}), 401
+    return None

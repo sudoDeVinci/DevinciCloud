@@ -1,4 +1,4 @@
-from handlers import *
+from src.handlers import *
 
 api = Blueprint("api", __name__) 
 

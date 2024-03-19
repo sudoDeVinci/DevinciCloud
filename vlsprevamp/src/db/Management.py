@@ -1,7 +1,6 @@
-from analysis.config import *
+from src.config import *
 import mysql.connector as mysql
-from db.schema import apply
-import toml
+from src.db.schema import apply
 
 class Manager:
     """

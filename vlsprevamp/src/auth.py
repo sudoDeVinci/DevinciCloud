@@ -1,4 +1,4 @@
-from handlers import *
+from src.handlers import *
 
 auth = Blueprint("auth", __name__) 
 

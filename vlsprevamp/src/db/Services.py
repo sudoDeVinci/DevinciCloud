@@ -1,9 +1,9 @@
 import mysql.connector as mysql
-from db.Entities import *
-from db.Management import Manager
-from analysis.config import debug
+from src.db.Entities import *
+from src.db.Management import Manager
+from src.config import debug
 from abc import ABC
-from analysis.config import *
+from src.config import *
 
 
 class Service(ABC):

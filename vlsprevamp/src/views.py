@@ -1,4 +1,4 @@
-from handlers import *
+from src.handlers import *
 from psutil import Process, cpu_percent
 from os import getpid
 

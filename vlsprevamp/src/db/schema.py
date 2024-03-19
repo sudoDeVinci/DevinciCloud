@@ -1,5 +1,5 @@
 import mysql.connector as mysql
-from analysis.config import debug
+from src.config import debug
 
 
 

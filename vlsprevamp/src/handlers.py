@@ -1,6 +1,6 @@
 from flask import Blueprint, request, Response, render_template, jsonify
-from config import *
-from db.Services import *
+from src.config import *
+from src.db.Services import *
 
 FIRMWARE_CONF:str = "firmware_cfg.toml"
 

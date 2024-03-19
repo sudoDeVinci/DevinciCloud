@@ -15,6 +15,8 @@
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       crossorigin="anonymous"
     />
+    {%block import %}{% endblock %}
+    
     <title>{%block title %}Cool Website{% endblock %}</title>
 </head>
 <body>
@@ -27,13 +29,13 @@
             <!--A navbar with Many options in a flexbox-->
             <nav id = "navbar">
                 <ul>
-                    <li><a href="#" target="_blank">Home</a></li>
-                    <li><a href="#" target="_blank">About</a></li>
-                    <li><a href="#" target="_blank">Contact</a></li>
-                    <li><a href="#" target="_blank">Blog</a></li>
-                    <li><a href="#" target="_blank">Index</a></li>
-                    <li><a href="#" target="_blank">Github</a></li>
-                    <li><a href="#" target="_blank">Live</a></li>
+                    <li><a href="/" target="">Home</a></li>
+                    <li><a href="#" target="">About</a></li>
+                    <li><a href="#" target="">Contact</a></li>
+                    <li><a href="/sign-up" target="">API</a></li>
+                    <li><a href="https://github.com/sudoDeVinci/DevinciCloud" target="_blank">Github</a></li>
+                    <li><a href="/sign-up" target="">Sign Up</a></li>
+                    <li><a href="/login" target="">Login</a></li>
                 </ul>
             </nav>
         </header>
@@ -59,7 +61,7 @@
         <div class="contain">
             <div class="column column1">
                 {% block left_content %}
-                <h2>Column 1</h2>
+                <h3>Column 1</h3>
                 <p>This is the side page content.</p>
                 <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quam metus, dapibus ut efficitur sagittis, posuere faucibus leo. 
                     Aliquam in est elementum, elementum enim ut, egestas magna. Sed dignissim erat quis turpis hendrerit auctor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
@@ -70,7 +72,7 @@
                 </div>
             <div class="column middle">
                 {%block main_content %}
-                <h2>Column 2</h2>
+                <h3>Column 2</h3>
                 <p>This is the content of Column 2.</p>
                 <p>This is the main page content</p>
                 <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quam metus, dapibus ut efficitur sagittis, posuere faucibus leo. 
@@ -82,7 +84,7 @@
                 </div>
             <div class="column column3">
                 {%block right_content%}
-                <h2>Column 3</h2>
+                <h3>Column 3</h3>
                 <p>This is the side page content</p>
                 <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quam metus, dapibus ut efficitur sagittis, posuere faucibus leo. 
                     Aliquam in est elementum, elementum enim ut, egestas magna. Sed dignissim erat quis turpis hendrerit auctor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
@@ -97,7 +99,7 @@
             <a href="" target="_blank">
                 <img id = "footer_logo" src = "../static/vlsp_logo.png" alt = "slop" width = "125">
             </a>
-            <p>This is the footer.</p>
+            <p>© 2024 Tadj Cazaubon</p>
             <div class="contain">
                 <div class="column">
                     <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quam metus, dapibus ut efficitur sagittis, posuere faucibus leo. 

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Sign Up or {% endblock %} 
+{% block title %}Login{% endblock %} 
 
 {% block import %}
 <link rel="stylesheet" href="../static/button.css">
@@ -11,7 +11,7 @@
 
 {% block main_content %}
   <form method="POST">
-    <h3>Sign Up or <a class = "option" href="/login" target="">Log in</a></h3>
+    <h3>Log in or <a class = "option" href="/sign-up" target="">Sign Up</a></h3></h3>
     <div class="form-group">
       <label for="email">Email Address</label>
       <input
@@ -23,16 +23,6 @@
       />
     </div>
     <div class="form-group">
-      <label for="firstName">First Name</label>
-      <input
-        type="text"
-        class="form-control"
-        id="firstName"
-        name="firstName"
-        placeholder="Enter first name"
-      />
-    </div>
-    <div class="form-group">
       <label for="password1">Password</label>
       <input
         type="password"
@@ -40,16 +30,6 @@
         id="password1"
         name="password1"
         placeholder="Enter password"
-      />
-    </div>
-    <div class="form-group">
-      <label for="password2">Password (Confirm)</label>
-      <input
-        type="password"
-        class="form-control"
-        id="password2"
-        name="password2"
-        placeholder="Confirm password"
       />
     </div>
     <br />

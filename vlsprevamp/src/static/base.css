@@ -32,8 +32,12 @@ header::after {
 
 h1 {
     float: left;
-    padding: 0.5em 0 0.5rem 0.75rem;
+    padding: 1.5rem 0 0.5rem 2rem;
     color: var(--font-color);
+    font-size: 1rem;
+}
+
+#title {
     font-size: 2rem;
 }
 
@@ -65,7 +69,7 @@ nav li {
 nav ul li a {
     color: var(--font-color);
     text-decoration: none;
-    padding: 1rem 2rem 1rem 2rem;
+    padding: 0.5rem 2rem 0.5rem 2rem;
     border-left: 0.2rem var(--font-color) solid; 
     transition: all ease-in-out 350ms;
 }
@@ -80,7 +84,7 @@ nav ul li a::before {
     content: '';
     display: block;
     position: absolute;
-    top: 2.5rem;
+    top: 3rem;
     left: 0;
     width: 0.2rem;
     height: 0.15rem;
@@ -98,14 +102,14 @@ nav ul li a:hover::before {
     transition: all 0.25s ease;
     border-radius: 15%;
     opacity: 90%;
-    margin: 1rem 0 1rem 2rem;
-    border: 0.4rem solid var(--font-color);
+    margin: 1rem 0 1rem 3rem;
+    border: 0.2rem solid var(--font-color);
 }
 
 #logo:hover {
     border-radius: 5%;
     opacity: 100%;
-    border: 0.4rem solid var(--main-hover-color);
+    border: 0.2rem solid var(--main-hover-color);
 }
 
 #footer_logo {

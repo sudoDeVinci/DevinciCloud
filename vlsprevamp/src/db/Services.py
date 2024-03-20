@@ -630,3 +630,52 @@ class LocationService(Service):
 
         return locs
     
+
+class UserService(Service):
+    @staticmethod
+    def get_all() -> List[UserEntity]:
+        pass
+
+    @staticmethod
+    def get(userID: str) -> UserEntity | None:
+        pass
+
+    @staticmethod
+    def get(email: str, password: str) -> UserEntity | None:
+        pass
+
+    @staticmethod
+    def add(username: str, email:str, password:str, role: Role) -> None:
+        pass
+
+    @staticmethod
+    def update(userID:str, password: str) -> None:
+        pass
+
+    @staticmethod
+    def update(userID:str, role: Role) -> None:
+        pass
+
+    @staticmethod
+    def update(userID:str, password:str, role: Role) -> None:
+        pass
+
+    @staticmethod
+    def update(email: str, userID:str, password:str, role: Role) -> None:
+        pass
+
+    @staticmethod
+    def delete() -> None:
+        pass
+
+    @staticmethod
+    def exists(username: str) -> bool:
+        pass
+
+    @staticmethod
+    def registered(userID: str) -> bool:
+        pass
+
+    @staticmethod
+    def registered(email: str, password: str) -> bool:
+        return False

@@ -1,4 +1,29 @@
 from abc import ABC, abstractmethod
+from src.config import *
+
+class Role(Enum):
+    ADMIN = "admin"
+    MEMBER = "member"
+    VISITOR = "visitor"
+    UNKNOWN = "unknown"
+
+    @classmethod
+    @functools.lru_cache(maxsize=None)
+    def match(cls, role:str):
+        """
+        Match input string to user role.
+        """
+        role = role.lower()
+        return Role[role] if role in cls.__members__.items() else cls.UNKNOWN
+
+
+    @classmethod
+    @functools.lru_cache(maxsize=None)
+    def __contains__(cls, role:str) -> bool:
+        """
+        Check if a role is present in the enum.
+        """
+        return role.lower() in cls.__members__.values()
 
 class Entity(ABC):
     """
@@ -19,7 +44,6 @@ class Entity(ABC):
     
     def get_timetstamp(self) -> str:
         return self.__timestamp
-
 
 class DeviceEntity(Entity):
     """
@@ -63,7 +87,6 @@ class DeviceEntity(Entity):
     def set_name(self, n:str) -> None:
         self.__name = n
 
-
 class ReadingEntity(Entity):
     """
     Row of data in the Reading table.
@@ -100,7 +123,6 @@ class ReadingEntity(Entity):
     
     def set_image_path(self, path:str) -> None:
         self.__image_path = path
-
 
 class SensorEntity(Entity):
     """
@@ -176,3 +198,10 @@ class LocationEntity():
 
     def get_longitude(self) -> float:
         return self.__longitude
+
+class UserEntity(Entity):
+    __name:str
+    __ID: str
+    __role: Role
+
+

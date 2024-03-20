@@ -60,10 +60,18 @@ def timestamp_to_path(timestamp:str) -> str:
     timestamp = timestamp.replace(":", "-")
     return timestamp
 
-def header_check(request: Request) -> Request | None:
-    timestamp = request.headers.get('timestamp')
-    mac = request.headers.get('MAC-Address')
-    if not mac: return jsonify({"error": "Mac Address header is missing"}), 400
-    if not timestamp: return jsonify({"error": "Timestamp header is missing"}), 400
-    if mac_filter(mac): return jsonify({"error": "Unauthorized"}), 401
+
+def header_check(request: Request, headers: Tuple[str]) -> Request | None:
+    """
+    Check for header existence and apply MAC filter.
+    """
+    missing_headers = [header for header in headers if request.headers.get(header) is None]
+    if missing_headers:
+        return jsonify({"error": f"Missing headers: {', '.join(missing_headers)}"}), 400
+
+    mac_headers = {'MAC-Address', 'X-esp32-sta-mac'}
+    mac_header = mac_headers.intersection(headers)
+    if mac_header:
+        if mac_filter(mac_header[0]): return jsonify({"error": "Unauthorized"}), 401
+
     return None

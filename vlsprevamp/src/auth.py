@@ -16,4 +16,4 @@ def login():
 
 @auth.route("/logout")
 def logout():
-    return "<p>logout</p>"
+    return render_template("login.html")

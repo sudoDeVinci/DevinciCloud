@@ -1,8 +1,15 @@
 from src.handlers import *
+from flask import url_for, redirect
 
 api = Blueprint("api", __name__) 
 
+@api.route("/", methods=['GET'])
+def re_to_docs() -> Response:
+    return redirect(url_for('api.index'))
 
+@api.route("/docs",methods=['GET'])
+def index() -> Response:
+    return render_template("api.html")
 
 @api.route("/update", methods=["GET"])
 def update() -> Response:
@@ -10,21 +17,21 @@ def update() -> Response:
     Handler for the api/update route on the server.
     """
     try:
-        mac = request.headers.get('X-esp32-sta-mac')
-        board_ver = request.headers.get('X-esp32-version')
+        err = header_check(request, ('X-esp32-sta-mac', 'X-esp32-version', 'X-esp32-sketch-sha256'))
+        if not err: return err
+
+        # mac = request.headers.get('X-esp32-sta-mac')
         # board_sha256 = request.headers.get("X-esp32-sketch-sha256")
-        
-        if not mac: return jsonify({"error": "Mac Address header is missing"}), 400
-        if mac_filter(mac): return jsonify({"error": "Unauthorized"}), 401
+        board_ver = request.headers.get('X-esp32-version')
         
         conf_dict = load_config()
         if conf_dict is None: return jsonify({"message": "No Current updates"}), 304
         FIRMWARE_FILE = conf_dict['path']
+        
         if FIRMWARE_FILE is None: return jsonify({"message": "No Current updates"}), 304
-
         if not need_update(board_ver): jsonify({"message": "No Current updates"}), 304
-            
-        if not os.path.exists(f"{ROOT}/{FIRMWARE_FILE}")
+        if not os.path.exists(f"{ROOT}/{FIRMWARE_FILE}"): return jsonify({"message":"File Not Found"}), 404
+        
         response = make_response(send_file(f"{ROOT}/{FIRMWARE_FILE}", mimetype="application/octet-stream"), 200)
         return response
     
@@ -38,7 +45,7 @@ def reading() -> Response:
     Handler for reading the /reading route on the server.
     """
     try:
-        err = header_check(request)
+        err = header_check(request, ('MAC-Address', 'timestamp'))
         if not err: return err
 
         timestamp = request.headers.get('timestamp')
@@ -75,7 +82,7 @@ def status() -> Response:
     """
     valid = ("1","0")
     try:
-        err = header_check(request)
+        err = header_check(request, ('MAC-Address', 'timestamp'))
         if not err: return err
 
         timestamp = request.headers.get('timestamp')
@@ -85,12 +92,47 @@ def status() -> Response:
         bmp = request.args.get('bmp')
         cam = request.args.get('cam')
 
+        if sht not in valid or bmp not in valid or cam not in valid:
+            return jsonify({"error": "Invalid status type received"}), 400
+        
+        if not StatusService.exists(mac): StatusService.add(mac, timestamp, sht, bmp, cam)
+        else: StatusService.update(mac, timestamp, sht, bmp, cam)
+        
+        return jsonify({"message": "Thanks for the stats"}), 200
+
     except Exception as e:
         pass
 
 
-
 @api.route("/images", methods = ['GET'])
 def images() -> Response:
-    pass
+    """
+    Handler for the /images in the server.
+    """
+    try:
+        err = header_check(request, ('MAC-Address', 'timestamp'))
+        if not err: return err
+
+        timestamp = request.headers.get('timestamp')
+        mac = request.headers.get('MAC-Address')
+        image_raw_bytes = request.get_data()  #get the whole body
+        # Assume the timestamp is already formattedon board.
+        # Create a filename based on the timestamp
+        filename = f"{timestamp_to_path(timestamp)}.jpg"
+
+        # Save the image to the specified directory
+        image_path = os.path.join(IMAGE_UPLOADS, filename)
+        with open(image_path, 'wb') as f:
+            f.write(image_raw_bytes)
+
+        if not ReadingService.exists(mac, timestamp): ReadingService.add(mac, None, None, None, None, timestamp, image_path)
+        else: ReadingService.update_path(mac, timestamp, image_path)
+
+        return jsonify({"message": "Image saved successfully", "filename": filename}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)}), 500
+
+
 

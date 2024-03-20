@@ -60,6 +60,7 @@ def mkdir(folder:str) -> str:
     return folder
 
 ROOT = f"{os.getcwd()}/src"
+IMAGE_UPLOADS = mkdir(f"{ROOT}/uploads")
 
 # Database related folders
 db_schema_folder = mkdir('schemas')

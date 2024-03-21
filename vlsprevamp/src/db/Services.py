@@ -4,6 +4,7 @@ from src.db.Management import Manager
 from src.config import debug
 from abc import ABC
 from src.config import *
+from uuid import uuid4
 
 
 class Service(ABC):
@@ -661,7 +662,7 @@ class UserService(Service):
 
 
     @staticmethod
-    def get(userID: str) -> UserEntity | None:
+    def get_user(userID: str) -> UserEntity | None:
         query_string = "SELECT * FROM Users WHERE ID=%s LIMIT 1;"
         user = None
 
@@ -672,7 +673,7 @@ class UserService(Service):
             row = cursor.fetchone()
             if row:
                 user = UserEntity(
-                    id = row["ID"],
+                    id = userID,
                     name = row["name"],
                     email = row["email"],
                     password = row['password'],
@@ -688,13 +689,16 @@ class UserService(Service):
         return user
 
     @staticmethod
-    def get(email: str, password: str) -> UserEntity | None:
-        query_string = "SELECT * FROM Users WHERE email=%s AND password=%s LIMIT 1;"
+    def get(email: str, password: str = None) -> UserEntity | None:
+        query_string = "SELECT * FROM Users WHERE email=%s LIMIT 1;" if not password else "SELECT * FROM Users WHERE email=%s AND password=%s LIMIT 1;"
         user = None
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
-            cursor.execute(query_string, (email, password))
+            if not password:
+                cursor.execute(query_string, (email, ))
+            else:
+                cursor.execute(query_string, (email, password))
 
             row = cursor.fetchone()
             if row:
@@ -702,7 +706,7 @@ class UserService(Service):
                     id = row["ID"],
                     name = row["name"],
                     email = email,
-                    password = password,
+                    password = row['password'],
                     role = Role.match(row["role"])
                 )
 
@@ -716,22 +720,27 @@ class UserService(Service):
 
     @staticmethod
     def add(name: str, email:str, password:str, role: Role) -> None:
-        pass
+        conn = Manager.get_conn()
+
+        # Insert records into the database.
+        insert_string = "INSERT INTO Users VALUES(%s, %s, %s, %s, %s);"
+
+        try:
+            cursor = Manager.get_conn().cursor()
+            cursor.execute(
+                insert_string, (str(uuid4()), name, email, password, role.value)
+            )
+
+            conn.commit()
+
+        except mysql.Error as e:
+            debug(f"Couldn't insert user record -> {e}")
+
+        finally:
+            if cursor: cursor.close()
 
     @staticmethod
-    def update(userID:str, password: str) -> None:
-        pass
-
-    @staticmethod
-    def update(userID:str, role: Role) -> None:
-        pass
-
-    @staticmethod
-    def update(userID:str, password:str, role: Role) -> None:
-        pass
-
-    @staticmethod
-    def update(email: str, userID:str, password:str, role: Role) -> None:
+    def update(userID:str, name:str, email:str, password:str, role: Role) -> None:
         pass
 
     @staticmethod
@@ -739,13 +748,17 @@ class UserService(Service):
         pass
 
     @staticmethod
-    def exists(email:str, password:str) -> bool:
-        query_string = "SELECT * FROM Users WHERE email=%s AND password=%s LIMIT 1;"
+    def exists(email:str, password: str = None) -> bool:
+        print(f"Looking for: {password}")
+        query_string = "SELECT * FROM Users WHERE email=%s LIMIT 1;" if not password else "SELECT * FROM Users WHERE email=%s AND password=%s LIMIT 1;"
         user:bool = False
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
-            cursor.execute(query_string, (email, password))
+            if not password:
+                cursor.execute(query_string, (email, ))
+            else:
+                cursor.execute(query_string, (email, password))
 
             user = cursor.fetchone() is not None
 

@@ -11,7 +11,7 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(ID: str) -> UserEntity:
-        return UserService.get(userID = ID)
+        return UserService.get_user(userID = ID)
 
     from src.views import views
     from src.auth import auth

@@ -73,3 +73,8 @@ def header_check(request: Request, headers: Tuple[str]) -> Request | None:
         if mac_filter(mac_header[0]): return jsonify({"error": "Unauthorized"}), 401
 
     return None
+
+def email_check(email: str) -> bool:
+    import re
+    pat = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+    return bool(re.match(pat, email))

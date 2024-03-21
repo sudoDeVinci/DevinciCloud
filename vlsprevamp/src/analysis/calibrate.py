@@ -32,7 +32,7 @@ def __load_config() -> Dict:
     """
     Attempt to load the calibration config
     """
-    return load_toml(calibration_config)
+    return load_toml(CALIBRATION_CONFIG)
 
 def __calibrate() -> Tuple[Matlike, Matlike, Sequence[Matlike], Sequence[Matlike]]:
     """
@@ -40,7 +40,7 @@ def __calibrate() -> Tuple[Matlike, Matlike, Sequence[Matlike], Sequence[Matlike
     Return camera matrix data.
     """
 
-    confdict:Dict = __load_config(calibration_config)
+    confdict:Dict = __load_config(CALIBRATION_CONFIG)
 
     board_conf = confdict["chessboard"]
     frame_conf = confdict["frame"]

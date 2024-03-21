@@ -64,6 +64,8 @@ IMAGE_UPLOADS = mkdir(f"{ROOT}/uploads")
 # root config folder
 root_config_folder = 'config'
 FIRMWARE_CONF:str = mkdir(f"{root_config_folder}/firmware_cfg.toml")
+DB_CONFIG:str = mkdir(f"{root_config_folder}/db_cfg.toml")
+CALIBRATION_CONFIG = "calibration_cfg.toml"
 
 
 # Various Image folders
@@ -81,7 +83,6 @@ calibration_images = mkdir(f"{calibration_folder}/trainers")
 camera_matrices = mkdir(f"{calibration_folder}/matrices")
 undistorted_calibration_images = mkdir(f"{calibration_folder}/undistorted")
 distorted_calibration_images = mkdir(f"{calibration_folder}/distorted")
-calibration_config = "calibration_cfg.toml"
 
 
 # If debug is True, print. Otherwise, do nothing.

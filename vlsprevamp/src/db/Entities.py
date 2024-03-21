@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from src.config import *
+from flask_login import UserMixin
 
 class Role(Enum):
     ADMIN = "admin"
@@ -199,9 +200,14 @@ class LocationEntity():
     def get_longitude(self) -> float:
         return self.__longitude
 
-class UserEntity(Entity):
+class UserEntity(Entity, UserMixin):
     __name:str
+    __email: str
     __ID: str
     __role: Role
+    __password: str
+
+    def get_password(self) -> str:
+        return self.__password
 
 

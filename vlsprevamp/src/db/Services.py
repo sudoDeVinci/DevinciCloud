@@ -634,15 +634,15 @@ class LocationService(Service):
 class UserService(Service):
     @staticmethod
     def get_all() -> List[UserEntity]:
-        pass
+        return []
 
     @staticmethod
     def get(userID: str) -> UserEntity | None:
-        pass
+        return None
 
     @staticmethod
     def get(email: str, password: str) -> UserEntity | None:
-        pass
+        return None
 
     @staticmethod
     def add(username: str, email:str, password:str, role: Role) -> None:
@@ -670,11 +670,7 @@ class UserService(Service):
 
     @staticmethod
     def exists(username: str) -> bool:
-        pass
-
-    @staticmethod
-    def registered(userID: str) -> bool:
-        pass
+        return False
 
     @staticmethod
     def registered(email: str, password: str) -> bool:

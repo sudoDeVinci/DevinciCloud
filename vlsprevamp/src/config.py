@@ -20,7 +20,6 @@ class camera_model(Enum):
     DSLR = "dslr"
     UNKNOWN = "unknown"
 
-
     @classmethod
     @functools.lru_cache(maxsize=None)
     def match(cls, camera:str):
@@ -30,7 +29,6 @@ class camera_model(Enum):
         camera = camera.lower()
         return camera_model[camera] if camera in cls.__members__.items() else cls.UNKNOWN
 
-
     @classmethod
     @functools.lru_cache(maxsize=None)
     def __contains__(cls, camera:str) -> bool:
@@ -38,7 +36,6 @@ class camera_model(Enum):
         Check if a camera model is supported.
         """
         return camera.lower() in cls.__members__.values()
-
 
 # Camera model for current visualization
 camera:str = camera_model['OV5640'].value
@@ -58,14 +55,15 @@ def mkdir(folder:str) -> str:
     if not os.path.exists(folder): os.makedirs(folder)
     return folder
 
+
 ROOT = f"{os.getcwd()}/src"
 IMAGE_UPLOADS = mkdir(f"{ROOT}/uploads")
 
 # root config folder
-root_config_folder = 'config'
+root_config_folder = 'configs'
 FIRMWARE_CONF:str = mkdir(f"{root_config_folder}/firmware_cfg.toml")
 DB_CONFIG:str = mkdir(f"{root_config_folder}/db_cfg.toml")
-CALIBRATION_CONFIG = "calibration_cfg.toml"
+CALIBRATION_CONFIG = mkdir(f"{root_config_folder}/calibration_cfg.toml")
 
 
 # Various Image folders

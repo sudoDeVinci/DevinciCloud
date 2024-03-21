@@ -2,8 +2,6 @@ from flask import Blueprint, Request, request, Response, render_template, make_r
 from src.config import *
 from src.db.Services import *
 
-FIRMWARE_CONF:str = "firmware_cfg.toml"
-
 
 def mac_filter(mac:str) -> bool:
     """

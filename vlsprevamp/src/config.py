@@ -10,7 +10,6 @@ from typing import List, Sequence, Tuple, Dict
 import toml
 
 
-
 class camera_model(Enum):
     """
     Enum holding the various camera modules information.
@@ -40,6 +39,7 @@ class camera_model(Enum):
         """
         return camera.lower() in cls.__members__.values()
 
+
 # Camera model for current visualization
 camera:str = camera_model['OV5640'].value
 
@@ -48,7 +48,6 @@ camera:str = camera_model['OV5640'].value
 type Mat = cv2.Mat
 type Matlike = cv2.typing.MatLike
 type NDArray = numpy.typing.NDArray[any]
-
 
 
 # Ensure path exists then return it.
@@ -62,8 +61,9 @@ def mkdir(folder:str) -> str:
 ROOT = f"{os.getcwd()}/src"
 IMAGE_UPLOADS = mkdir(f"{ROOT}/uploads")
 
-# Database related folders
-db_schema_folder = mkdir('schemas')
+# root config folder
+root_config_folder = 'config'
+FIRMWARE_CONF:str = mkdir(f"{root_config_folder}/firmware_cfg.toml")
 
 
 # Various Image folders

@@ -679,3 +679,4 @@ class UserService(Service):
     @staticmethod
     def registered(email: str, password: str) -> bool:
         return False
+    

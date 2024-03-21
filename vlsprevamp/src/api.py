@@ -1,5 +1,6 @@
 from src.handlers import *
 from flask import url_for, redirect
+from flask_login import current_user
 
 api = Blueprint("api", __name__) 
 
@@ -9,7 +10,7 @@ def re_to_docs() -> Response:
 
 @api.route("/docs",methods=['GET'])
 def index() -> Response:
-    return render_template("api.html")
+    return render_template("api.html", user=current_user)
 
 @api.route("/update", methods=["GET"])
 def update() -> Response:

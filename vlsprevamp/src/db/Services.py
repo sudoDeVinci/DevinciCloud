@@ -180,7 +180,7 @@ class ReadingService(Service):
         return readings
 
     @staticmethod
-    def get(MAC:str, timetsamp:str) -> ReadingEntity | None:
+    def get(MAC:str, timestamp:str) -> ReadingEntity | None:
         query_string = "SELECT * FROM Readings WHERE timestamp=%s AND MAC=%s LIMIT 1;"
         reading = None
 
@@ -634,18 +634,88 @@ class LocationService(Service):
 class UserService(Service):
     @staticmethod
     def get_all() -> List[UserEntity]:
-        return []
+        query_string = "SELECT * FROM Users;"
+        users = []
+
+        try:
+            cursor = Manager.get_conn().cursor(dictionary=True)
+            cursor.execute(query_string)
+
+            for row in cursor.fetchall():
+                user = UserEntity(
+                    id = row["ID"],
+                    name = row["name"],
+                    email = row["email"],
+                    password = row['password'],
+                    role = Role.match(row["role"])
+                )
+                users.append(user)
+
+        except mysql.Error as e:
+            debug(f"Couldn't fetch users record -> {e}")
+
+        finally:
+            if cursor: cursor.close()
+
+        return users
+
 
     @staticmethod
     def get(userID: str) -> UserEntity | None:
-        return None
+        query_string = "SELECT * FROM Users WHERE ID=%s LIMIT 1;"
+        user = None
+
+        try:
+            cursor = Manager.get_conn().cursor(dictionary=True)
+            cursor.execute(query_string, (userID, ))
+
+            row = cursor.fetchone()
+            if row:
+                user = UserEntity(
+                    id = row["ID"],
+                    name = row["name"],
+                    email = row["email"],
+                    password = row['password'],
+                    role = Role.match(row["role"])
+                )
+
+        except mysql.Error as e:
+            debug(f"Couldn't fetch user record -> {e}")
+
+        finally:
+            if cursor: cursor.close()
+
+        return user
 
     @staticmethod
     def get(email: str, password: str) -> UserEntity | None:
-        return None
+        query_string = "SELECT * FROM Users WHERE email=%s AND password=%s LIMIT 1;"
+        user = None
+
+        try:
+            cursor = Manager.get_conn().cursor(dictionary=True)
+            cursor.execute(query_string, (email, password))
+
+            row = cursor.fetchone()
+            if row:
+                user = UserEntity(
+                    id = row["ID"],
+                    name = row["name"],
+                    email = email,
+                    password = password,
+                    role = Role.match(row["role"])
+                )
+
+        except mysql.Error as e:
+            debug(f"Couldn't fetch user record -> {e}")
+
+        finally:
+            if cursor: cursor.close()
+
+        return user
 
     @staticmethod
-    def add(username: str, email:str, password:str, role: Role) -> None:
+    def add(name: str, email:str, password:str, role: Role) -> None:
         pass
 
     @staticmethod
@@ -669,10 +739,20 @@ class UserService(Service):
         pass
 
     @staticmethod
-    def exists(username: str) -> bool:
-        return False
+    def exists(email:str, password:str) -> bool:
+        query_string = "SELECT * FROM Users WHERE email=%s AND password=%s LIMIT 1;"
+        user:bool = False
 
-    @staticmethod
-    def registered(email: str, password: str) -> bool:
-        return False
-    
+        try:
+            cursor = Manager.get_conn().cursor(dictionary=True)
+            cursor.execute(query_string, (email, password))
+
+            user = cursor.fetchone() is not None
+
+        except mysql.Error as e:
+            debug(f"Couldn't fetch user record -> {e}")
+
+        finally:
+            if cursor: cursor.close()
+
+        return user

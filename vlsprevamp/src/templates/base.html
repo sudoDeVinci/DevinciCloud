@@ -29,13 +29,16 @@
             <!--A navbar with Many options in a flexbox-->
             <nav id = "navbar">
                 <ul>
+                    {% if user.is_authenticated %}
                     <li><a href="/" target="">Home</a></li>
                     <li><a href="/about" target="">About</a></li>
                     <li><a href="#" target="">Contact</a></li>
                     <li><a href="/api/docs" target="">API</a></li>
+                    {% else %}
                     <li><a href="https://github.com/sudoDeVinci/DevinciCloud" target="_blank">Github</a></li>
                     <li><a href="/sign-up" target="">Sign Up</a></li>
                     <li><a href="/login" target="">Login</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </header>

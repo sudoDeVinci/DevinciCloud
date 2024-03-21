@@ -168,7 +168,7 @@ class SensorEntity(Entity):
     def allUp(self) -> bool:
         return (self.__sht and self.__bmp and self.__cam)
 
-class LocationEntity():
+class LocationEntity(Entity):
     """
     Row of data in the locations table.
     """
@@ -201,13 +201,31 @@ class LocationEntity():
         return self.__longitude
 
 class UserEntity(Entity, UserMixin):
+    __ID: str
     __name:str
     __email: str
-    __ID: str
-    __role: Role
     __password: str
+    __role: Role
+
+    def __init__(self, id: str, name:str, email:str,
+                password:str, role:Role) -> None:
+        self.__ID = id
+        self.__name = name
+        self.__email = email
+        self.__password = password
+        self.__role = role 
 
     def get_password(self) -> str:
         return self.__password
 
-
+    def get_name(self) -> str:
+        return self.__name
+    
+    def get_id(self):
+        return self.__ID
+    
+    def get_email(self) -> str:
+        return self.__email
+    
+    def get_role(self) -> Role:
+        return self.__role

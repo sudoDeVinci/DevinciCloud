@@ -11,7 +11,7 @@ def signup():
 
 @auth.route("/sign-up", methods=['GET', 'POST'])
 def sign_up():
-    return render_template("sign_up.html")
+    return render_template("sign_up.html", user = current_user)
 
 @auth.route("/login", methods=['GET', 'POST'])
 def login():
@@ -22,23 +22,27 @@ def login():
         debug(f"Email: {email} and Password: {password}")
         if not email and not password:
             flash("Fields cannot be empty.", category="error") 
-            return render_template("login.html")
+            return render_template("login.html", user = current_user)
         
-        elif not UserService.registered(email, generate_password_hash(password)):
+        elif not UserService.exists(email, generate_password_hash(password)):
             flash("No Account for that email/password combination found.", category="error")
-            return render_template("login.html")
+            return render_template("login.html", user = current_user)
         
         else:
             user = UserService.get(email, password)
             if not user: 
                 flash("Couldn't fetch user records", category = "error")
-                return render_template("login.html")
+                return render_template("login.html", user = current_user)
 
             flash("Logged in Successfully!", category="success")
+            login_user(user, remember=True)
             return redirect(url_for("views.index"))
 
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template("login.html", user=current_user)
+
 @auth.route("/logout")
+@login_required
 def logout():
-    return render_template("login.html")
+    logout_user()
+    return render_template("login.html", user=current_user)

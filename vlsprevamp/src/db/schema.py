@@ -63,6 +63,17 @@ def apply(mydb:mysql.MySQLConnection):
         );
     """)
 
+    myCursor.execute("""
+        CREATE TABLE IF NOT EXISTS Users(
+            ID VARCHAR(10),
+            name VARCHAR(50),
+            email VARCHAR(255),
+            password VARCHAR(300),
+            role VARCHAR(30),
+            PRIMARY KEY (ID)
+        );
+    """)
+
 
     # Commit
     mydb.commit()

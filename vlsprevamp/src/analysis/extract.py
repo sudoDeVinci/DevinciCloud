@@ -31,6 +31,25 @@ def process_YBR(image: NDArray) -> NDArray:
     return non_black_data
 
 class Colour_Tag(Enum):
+    """
+    A Colour Tag holds a dictionary of relelvant values to an image of a specific
+    colour space.
+
+    ## Fields
+    
+    #### 'components': List[str, str, str]
+        - A 3-tuple of the colour channels in order.
+    
+    #### 'tag': str
+        - The corresponding tag used by Pillow when converting to the colour space.
+    
+    #### 'converter': int
+        - The OpenCV COLOR_BGR2<target> constant for the color space.
+
+    #### 'func': Callable[[NDArray], NDarray]
+        - The function used to get non-black data from a set of images stacked as an NDArray.
+    """
+
     RGB = {
         'components' : ('Red', 'Green', 'Blue'),
         'tag' : 'RGB',
@@ -65,6 +84,12 @@ class Colour_Tag(Enum):
         for _, tagtype in cls.__members__.items():
             if tag_str == tagtype.value['tag'].upper(): return tagtype
         return cls.UNKNOWN
+    
+class ChannelBound(NamedTuple):
+    mean: float
+    std: float
+    lower_bound: int
+    upper_bound: int
 
 
 def count(xyz_sk: NDArray) -> NDArray:
@@ -90,9 +115,9 @@ def get_nonblack_all(folder_path:str, colour_tag: Colour_Tag) -> NDArray:
         if not __is_image(filename): continue
     
         im = Image.open(os.path.join(folder_path, filename))
-        tag = colour_tag.value['tag']
+        tag:str = colour_tag.value['tag']
 
-        __process = colour_tag.value['func']
+        __process:Callable[[NDArray], NDArray] = colour_tag.value['func']
 
         if tag != 'RGB': 
             im = im.convert(tag)
@@ -109,12 +134,12 @@ def remove_outliers_iqr(data: NDArray) -> NDArray:
     Remove outliers from data using IQR.
     Data points that fall below Q1 - 1.5 IQR or above the third quartile Q3 + 1.5 IQR are outliers.
     """
-    Q1 = np.percentile(data, 25)
-    Q3 = np.percentile(data, 75)
+    Q1 = np.percentile(data, 25, axis=0)  # Calculate Q1 along columns (axis=0)
+    Q3 = np.percentile(data, 75, axis=0)  # Calculate Q3 along columns (axis=0)
     IQR = Q3 - Q1
     lower_bound = Q1 - 1.5 * IQR
     upper_bound = Q3 + 1.5 * IQR
-    return data[(data >= lower_bound) & (data <= upper_bound)]
+    return data[((data >= lower_bound) & (data <= upper_bound)).all(axis=1)]  # Ensure 2D structure is preserved
 
 def remove_outliers_z_score(data: NDArray, threshold: float = 3.0) -> NDArray:
     """
@@ -150,6 +175,15 @@ def identify_best_distribution(results):
     for i, (dist_name, p_value) in enumerate(sorted_results):
         print(f"{i+1}. {dist_name} (p-value = {p_value:.4f})")
 
+def get_channel_info_initial(array: NDArray) -> NamedTuple:
+    mean = np.mean(array, axis = 0)
+    std = np.std(array, axis = 0)
+    lb = mean - (2 * std)
+    ub = mean + (2 * std)
+
+    return ChannelBound(mean, std, lb, ub)
+
+
 
 if __name__ == "__main__":
 
@@ -158,4 +192,16 @@ if __name__ == "__main__":
     tag:Colour_Tag = Colour_Tag.match('HSV')
     print(tag.value)
 
-    sky = get_nonblack_all(cam.cloud_images_folder, tag)
+    sky = get_nonblack_all(cam.sky_images_folder, tag)
+    cloud = get_nonblack_all(cam.cloud_images_folder, tag)
+
+    # Approximate to normal and remove outliers via z-score using p = 3.0.
+    data_cloud = remove_outliers_iqr(cloud)
+    data_sky = remove_outliers_iqr(sky)
+
+    del cloud, sky
+    
+
+    debug(f"{get_channel_info_initial(data_cloud[:, 0])}\n")
+    debug(f"{get_channel_info_initial(data_cloud[:, 1])}\n")
+    debug(f"{get_channel_info_initial(data_cloud[:, 2])}\n")

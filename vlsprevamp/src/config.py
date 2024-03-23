@@ -6,7 +6,7 @@ from gc import collect
 import functools
 from datetime import datetime
 from enum import Enum
-from typing import List, Sequence, Tuple, Dict
+from typing import List, Sequence, Tuple, Dict, NamedTuple
 import toml
 
 class camera_model(Enum):

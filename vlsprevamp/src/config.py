@@ -49,7 +49,9 @@ class Camera:
     def __init__(self, Model):
         self.Model = Model
         # Graphing paths
-        root_graph_folder = 'Graphs'
+        self.root_graph_folder = 'Graphs'
+        self.histogram_folder = mkdir(f"{self.root_graph_folder}/{Model.value}/hist")
+        self.pca_folder = mkdir(f"{self.root_graph_folder}/{Model.value}/pca")
 
         # Various Image folders
         self.root_image_folder = 'images'
@@ -78,10 +80,7 @@ class Camera:
         """
         os.makedirs(path, exist_ok=True)
         return path
-
-
-
-
+    
 
 # Camera model for current visualization
 CAMERA:str = camera_model['IPHONE13MINI'].value

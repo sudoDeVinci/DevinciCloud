@@ -367,6 +367,9 @@ class StatusService(Service):
     @staticmethod
     def update(MAC:str, timestamp:str, sht:bool, bmp:bool, cam:bool, wifi:bool = True) -> None:
         conn = Manager.get_conn()
+        if not cursor:
+            debug("No database connection.")
+            return None
         update_string = "UPDATE Status SET SHT=%s, BMP=%s, CAM=%s, WIFI=%s, timestamp=%s WHERE MAC=%s;"
 
         try:
@@ -390,6 +393,9 @@ class StatusService(Service):
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return False
             cursor.execute(query_string, (MAC,))
 
             stats = cursor.fetchone() is not None
@@ -407,10 +413,13 @@ class LocationService(Service):
     @staticmethod
     def country_exists(region:str) -> bool:
         query_string = "SELECT * FROM Locations WHERE country=%s;"
-        location = None
+        location = False
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return False
             cursor.execute(
                 query_string, (region, )
             )
@@ -428,10 +437,13 @@ class LocationService(Service):
     @staticmethod
     def region_exists(region:str) -> bool:
         query_string = "SELECT * FROM Locations WHERE region=%s;"
-        location = None
+        location = False
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return False
             cursor.execute(
                 query_string, (region, )
             )
@@ -450,10 +462,13 @@ class LocationService(Service):
     @staticmethod
     def city_exists(city:str) -> bool:
         query_string = "SELECT * FROM Locations WHERE city=%s;"
-        location = None
+        location = False
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return False
             cursor.execute(
                 query_string, (city, )
             )
@@ -471,14 +486,17 @@ class LocationService(Service):
     @staticmethod
     def exists(latitude:float, longitude:float) -> bool:
         query_string = "SELECT * FROM Locations WHERE latitude=%s AND longitude=%s LIMIT 1;"
-        location = None
+        location = False
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return False
             cursor.execute(
                 query_string, (latitude, longitude)
             )
 
-            row = cursor.fetchone() is not None
+            location = cursor.fetchone() is not None
         
         except mysql.Error as e:
             debug(f"Couldn't fetch location records list -> {e}")
@@ -496,6 +514,9 @@ class LocationService(Service):
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return []
             cursor.execute(query_string)
 
             for row in cursor.fetchall():
@@ -522,6 +543,9 @@ class LocationService(Service):
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return None
             cursor.execute(
                 query_string, (latitude, longitude)
             )
@@ -546,11 +570,13 @@ class LocationService(Service):
     
     def get_city(city:str) -> List[LocationEntity]:
         query_string = "SELECT * FROM Locations WHERE city=%s;"
-        location = None
         locs = []
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return []
             cursor.execute(
                 query_string, (city, )
             )
@@ -575,11 +601,13 @@ class LocationService(Service):
         
     def get_region(region:str) -> List[LocationEntity]:
         query_string = "SELECT * FROM Locations WHERE region=%s;"
-        location = None
         locs = []
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return []
             cursor.execute(
                 query_string, (region, )
             )
@@ -604,11 +632,13 @@ class LocationService(Service):
 
     def get_country(country:str) -> List[LocationEntity]:
         query_string = "SELECT * FROM Locations WHERE country=%s;"
-        location = None
         locs = []
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return []
             cursor.execute(
                 query_string, (country, )
             )
@@ -640,6 +670,9 @@ class UserService(Service):
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return None
             cursor.execute(query_string)
 
             for row in cursor.fetchall():
@@ -668,6 +701,9 @@ class UserService(Service):
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return None
             cursor.execute(query_string, (userID, ))
 
             row = cursor.fetchone()
@@ -695,6 +731,9 @@ class UserService(Service):
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return None
             if not password:
                 cursor.execute(query_string, (email, ))
             else:
@@ -721,6 +760,9 @@ class UserService(Service):
     @staticmethod
     def add(name: str, email:str, password:str, role: Role) -> None:
         conn = Manager.get_conn()
+        if not conn:
+                debug("No database connection.")
+                return None
 
         # Insert records into the database.
         insert_string = "INSERT INTO Users VALUES(%s, %s, %s, %s, %s);"
@@ -749,12 +791,14 @@ class UserService(Service):
 
     @staticmethod
     def exists(email:str, password: str = None) -> bool:
-        print(f"Looking for: {password}")
         query_string = "SELECT * FROM Users WHERE email=%s LIMIT 1;" if not password else "SELECT * FROM Users WHERE email=%s AND password=%s LIMIT 1;"
         user:bool = False
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
+            if not cursor:
+                debug("No database connection.")
+                return False
             if not password:
                 cursor.execute(query_string, (email, ))
             else:

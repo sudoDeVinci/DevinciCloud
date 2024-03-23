@@ -90,7 +90,7 @@ def __write_calibration_data(cam_model:camera_model, cameraMatrix:Matlike, dist:
             'rvecs': np.asarray(rvecs).tolist(),
             'tvecs': np.asarray(tvecs).tolist()}
 
-    write_toml(data, f"{camera_matrices}/{cam_model}.toml")
+    write_toml(data, f"{camera_matrices}/{cam_model.value}.toml")
 
 def undistort(img:Matlike, cameraMatrix:Matlike, dist:Matlike, remapping:bool = True, cropping:bool = True) -> Matlike:
     """

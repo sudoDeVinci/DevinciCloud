@@ -28,9 +28,9 @@ class camera_model(Enum):
         Match input string to camera model.
         """
         camera = camera.lower()
-        print(cls.__members__.items())
-        for name, camtype in cls.__members__.items():
-            if camera == camtype.value: return camera_model[name]
+        for _, camtype in cls.__members__.items():
+            print(camtype)
+            if camera == camtype.value: return camtype
         return cls.UNKNOWN
 
     @classmethod

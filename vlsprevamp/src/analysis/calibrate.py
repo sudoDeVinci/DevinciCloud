@@ -80,17 +80,17 @@ def __calibrate(calibration_image_folder: str, confdict: Dict) -> Tuple[Matlike,
 
     return (cameraMatrix, dist, rvecs, tvecs)
 
-def __write_calibration_data(cam_model:camera_model, cameraMatrix:Matlike, dist:Matlike, rvecs:Sequence[Matlike] = None, tvecs:Sequence[Matlike] = None) -> None:
+def __write_calibration_data(cam:Camera, cameraMatrix:Matlike, dist:Matlike, rvecs:Sequence[Matlike] = None, tvecs:Sequence[Matlike] = None) -> None:
     """
     Write camera calibration data to toml file.
     """
-    data = {'model': cam_model.value,
+    data = {'model': cam.Model.value,
             'matrix': np.asarray(cameraMatrix).tolist(),
             'distCoeff': np.asarray(dist).tolist(),
             'rvecs': np.asarray(rvecs).tolist(),
             'tvecs': np.asarray(tvecs).tolist()}
 
-    write_toml(data, f"{camera_matrices}/{cam_model.value}.toml")
+    write_toml(data, f"{cam.camera_matrices}/{__current_time_as_filename()}.toml")
 
 def undistort(img:Matlike, cameraMatrix:Matlike, dist:Matlike, remapping:bool = True, cropping:bool = True) -> Matlike:
     """
@@ -113,6 +113,13 @@ def undistort(img:Matlike, cameraMatrix:Matlike, dist:Matlike, remapping:bool = 
     
     return undistorted
 
+def __current_time_as_filename() -> str:
+    """
+    Generate current time as a filename string in the format: YYYY-MM-DD_HH-MM-SS
+    """
+    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    return current_time
+
 def __has_filetype(name: str) -> bool:
     for filetype in IMAGE_TYPES:
         if name.endswith(f".{filetype}"): return True
@@ -124,7 +131,10 @@ def __filetype_match(name:str) -> str | None:
     return None
 
 
-def main(image_name: str, calibration_image_folder: str, config: str) -> None:
+def calibrate(image_name: str, cam: Camera) -> None:
+    calibration_image_folder = cam.training_calibration_images
+    print(calibration_image_folder)
+    config = cam.CALIBRATION_CONFIG
     if not __has_filetype(image_name):
         filetype = __filetype_match
         if filetype is not None: image_name = f"{image_name}.{filetype}"
@@ -137,10 +147,11 @@ def main(image_name: str, calibration_image_folder: str, config: str) -> None:
     calibration_vals = __calibrate(calibration_image_folder, confdict)
     if not calibration_vals: return None
     cameraMatrix, dist, rvecs, tvecs = calibration_vals
-    __write_calibration_data(camera_model.match(CAMERA), cameraMatrix, dist, rvecs, tvecs)
-    distorted = cv2.imread(f"{distorted_calibration_images}/{image_name}")
+    __write_calibration_data(cam, cameraMatrix, dist, rvecs, tvecs)
+    distorted = cv2.imread(f"{cam.distorted_calibration_images}/{image_name}")
     undistorted = undistort(distorted, cameraMatrix, dist, remapping=True, cropping=False)
-    cv2.imwrite(f"{undistorted_calibration_images}/{image_name}", undistorted)
+    cv2.imwrite(f"{cam.undistorted_calibration_images}/{image_name}", undistorted)
 
 if __name__ == "__main__":
-    main("can.jpg", training_calibration_images, CALIBRATION_CONFIG)
+    model = Camera(camera_model.IPHONE13MINI)
+    calibrate("can.jpg", model)

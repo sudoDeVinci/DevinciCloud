@@ -9,7 +9,6 @@ from enum import Enum
 from typing import List, Sequence, Tuple, Dict
 import toml
 
-
 class camera_model(Enum):
     """
     Enum holding the various camera modules information.
@@ -29,7 +28,6 @@ class camera_model(Enum):
         """
         camera = camera.lower()
         for _, camtype in cls.__members__.items():
-            print(camtype)
             if camera == camtype.value: return camtype
         return cls.UNKNOWN
 
@@ -40,6 +38,50 @@ class camera_model(Enum):
         Check if a camera model is supported.
         """
         return camera_model.match(camera) != cls.UNKNOWN
+
+
+class Camera:
+    """
+    Camera class wrapper to automatically handle the format
+    of various paths for a specific camera.
+    """
+
+    def __init__(self, Model):
+        self.Model = Model
+        # Graphing paths
+        root_graph_folder = 'Graphs'
+
+        # Various Image folders
+        self.root_image_folder = 'images'
+        self.blocked_images_folder = self.mkdir(f"{self.root_image_folder}/{Model.value}/blocked")
+        self.reference_images_folder = self.mkdir(f"{self.root_image_folder}/{Model.value}/reference")
+        self.cloud_images_folder = self.mkdir(f"{self.root_image_folder}/{Model.value}/cloud")
+        self.sky_images_folder = self.mkdir(f"{self.root_image_folder}/{Model.value}/sky")
+
+        # Calibration image paths and settings
+        self.calibration_folder = "calibration"
+        self.camera_matrices = self.mkdir(f"{self.calibration_folder}/{Model.value}/matrices")
+        self.training_calibration_images = self.mkdir(f"{self.calibration_folder}/{Model.value}/trainers")
+        self.undistorted_calibration_images = self.mkdir(f"{self.calibration_folder}/{Model.value}/undistorted")
+        self.distorted_calibration_images = self.mkdir(f"{self.calibration_folder}/{Model.value}/distorted")
+        self.CALIBRATION_CONFIG = self.mkdir(f"{self.calibration_folder}/{Model.value}/calibration_cfg.toml")
+
+        # Various config files
+        root_config_folder = 'configs'
+
+    def _eq(self, name: str):
+        return name == self.Model.value
+
+    def mkdir(self, path: str):
+        """
+        Create directories if they do not exist.
+        """
+        os.makedirs(path, exist_ok=True)
+        return path
+
+
+
+
 
 # Camera model for current visualization
 CAMERA:str = camera_model['IPHONE13MINI'].value
@@ -65,32 +107,10 @@ IMAGE_UPLOADS = mkdir(f"{ROOT}/uploads")
 
 IMAGE_TYPES = ("jpg","png","jpeg","bmp","svg")
 
-
 # Various config files
-root_config_folder = 'configs'
+root_config_folder = mkdir('configs')
 FIRMWARE_CONF:str = f"{root_config_folder}/firmware_cfg.toml"
 DB_CONFIG:str = f"{root_config_folder}/db_cfg.toml"
-
-
-# Various Image folders
-root_image_folder = 'images'
-blocked_images_folder = mkdir(f"{root_image_folder}/{CAMERA}/blocked")
-reference_images_folder = mkdir(f"{root_image_folder}/{CAMERA}/reference")
-cloud_images_folder = mkdir(f"{root_image_folder}/{CAMERA}/cloud")
-sky_images_folder = mkdir(f"{root_image_folder}/{CAMERA}/sky")
-
-
-# Calibration image paths and settings  
-calibration_folder = "calibration"
-camera_matrices = mkdir(f"{calibration_folder}/{CAMERA}/matrices")
-training_calibration_images = mkdir(f"{calibration_folder}/{CAMERA}/trainers")
-undistorted_calibration_images = mkdir(f"{calibration_folder}/{CAMERA}/undistorted")
-distorted_calibration_images = mkdir(f"{calibration_folder}/{CAMERA}/distorted")
-CALIBRATION_CONFIG = f"{calibration_folder}/{CAMERA}/calibration_cfg.toml"
-
-
-# Graphing paths
-root_graph_folder = mkdir('Graphs')
 
 
 # If debug is True, print. Otherwise, do nothing.

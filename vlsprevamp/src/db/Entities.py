@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from src.config import *
 from flask_login import UserMixin
+from src.config import *
 
 class Role(Enum):
     ADMIN = "admin"
@@ -206,14 +206,16 @@ class UserEntity(Entity, UserMixin):
     __email: str
     __password: str
     __role: Role
+    __camera: Camera
 
     def __init__(self, id: str, name:str, email:str,
-                password:str, role:Role) -> None:
+                password:str, role:Role, camera: Camera) -> None:
         self.__ID = id
         self.__name = name
         self.__email = email
         self.__password = password
         self.__role = role 
+        self.__camera = camera
 
     def get_password(self) -> str:
         return self.__password
@@ -229,3 +231,6 @@ class UserEntity(Entity, UserMixin):
     
     def get_role(self) -> Role:
         return self.__role
+    
+    def get_camera(self) -> Camera:
+        return self.__camera

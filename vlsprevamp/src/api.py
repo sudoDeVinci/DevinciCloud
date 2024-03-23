@@ -102,7 +102,7 @@ def status() -> Response:
         return jsonify({"message": "Thanks for the stats"}), 200
 
     except Exception as e:
-        pass
+        return jsonify({"error": str(e)}), 500
 
 
 @api.route("/images", methods = ['GET'])

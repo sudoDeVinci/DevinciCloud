@@ -2,7 +2,7 @@ from src.config import *
 import glob
 
 """
-Code snippets from:
+Used code snippets from:
 https://github.com/jeongwhanchoi/find-chessboard-corners/blob/master/calibrating_a_camera.ipynb
 """
 
@@ -28,19 +28,21 @@ def __valid_config_dict(confdict: Dict) -> bool:
     
     return True
 
-def __load_config() -> Dict:
+def __load_config(config: str) -> Dict | None:
     """
     Attempt to load the calibration config
     """
-    return load_toml(CALIBRATION_CONFIG)
+    confdict = load_toml(config)
+    if not __valid_config_dict(confdict):
+        debug(f"Confdict not loaded correctly, current config: {confdict}")
+        return None
+    return confdict
 
-def __calibrate() -> Tuple[Matlike, Matlike, Sequence[Matlike], Sequence[Matlike]]:
+def __calibrate(calibration_image_folder: str, confdict: Dict) -> Tuple[Matlike, Matlike, Sequence[Matlike], Sequence[Matlike]] | None:
     """
     Calculate camera matrix data via calibration with chessboard images.
     Return camera matrix data.
     """
-
-    confdict:Dict = __load_config(CALIBRATION_CONFIG)
 
     board_conf = confdict["chessboard"]
     frame_conf = confdict["frame"]
@@ -59,7 +61,7 @@ def __calibrate() -> Tuple[Matlike, Matlike, Sequence[Matlike], Sequence[Matlike
     # 2d points in image plane.
     imgpoints = [] 
     
-    images = glob.glob(f'{calibration_images}/*.jpg')
+    images = glob.glob(f'{calibration_image_folder}/*.jpg')
 
     for image in images:
 
@@ -111,12 +113,34 @@ def undistort(img:Matlike, cameraMatrix:Matlike, dist:Matlike, remapping:bool = 
     
     return undistorted
 
-def main(image_name: str, calibration_image_folder: str) -> None:
-    cameraMatrix, dist, rvecs, tvecs = __calibrate(calibration_image_folder)
-    __write_calibration_data(camera_model.OV5640, cameraMatrix, dist, rvecs, tvecs)
+def __has_filetype(name: str) -> bool:
+    for filetype in IMAGE_TYPES:
+        if name.endswith(f".{filetype}"): return True
+    return False
+
+def __filetype_match(name:str) -> str | None:
+    for filetype in IMAGE_TYPES:
+        if os.path.exists(f"{name}.{filetype}"): return filetype
+    return None
+
+
+def main(image_name: str, calibration_image_folder: str, config: str) -> None:
+    if not __has_filetype(image_name):
+        filetype = __filetype_match
+        if filetype is not None: image_name = f"{image_name}.{filetype}"
+        else:
+            debug(f"Image {image_name}.{filetype} does not exist.") 
+            return None
+    
+    confdict:Dict = __load_config(config)
+    if not confdict: return None
+    calibration_vals = __calibrate(calibration_image_folder, confdict)
+    if not calibration_vals: return None
+    cameraMatrix, dist, rvecs, tvecs = calibration_vals
+    __write_calibration_data(camera_model.match(CAMERA), cameraMatrix, dist, rvecs, tvecs)
     distorted = cv2.imread(f"{distorted_calibration_images}/{image_name}")
     undistorted = undistort(distorted, cameraMatrix, dist, remapping=True, cropping=False)
     cv2.imwrite(f"{undistorted_calibration_images}/{image_name}", undistorted)
 
 if __name__ == "__main__":
-    main("can")
+    main("can.jpg", training_calibration_images, CALIBRATION_CONFIG)

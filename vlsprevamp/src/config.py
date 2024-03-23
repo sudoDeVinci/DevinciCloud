@@ -18,6 +18,7 @@ class camera_model(Enum):
     OV2640 = "ov2640"
     OV5640 = "ov5640"
     DSLR = "dslr"
+    IPHONE13MINI = "iphone13mini"
     UNKNOWN = "unknown"
 
     @classmethod
@@ -27,7 +28,10 @@ class camera_model(Enum):
         Match input string to camera model.
         """
         camera = camera.lower()
-        return camera_model[camera] if camera in cls.__members__.items() else cls.UNKNOWN
+        print(cls.__members__.items())
+        for name, camtype in cls.__members__.items():
+            if camera == camtype.value: return camera_model[name]
+        return cls.UNKNOWN
 
     @classmethod
     @functools.lru_cache(maxsize=None)
@@ -35,10 +39,10 @@ class camera_model(Enum):
         """
         Check if a camera model is supported.
         """
-        return camera.lower() in cls.__members__.values()
+        return camera_model.match(camera) != cls.UNKNOWN
 
 # Camera model for current visualization
-camera:str = camera_model['OV5640'].value
+CAMERA:str = camera_model['IPHONE13MINI'].value
 
 
 # For typing, these are inexact because out memory layout differences such as between Mat and UMat
@@ -59,28 +63,34 @@ def mkdir(folder:str) -> str:
 ROOT = f"{os.getcwd()}/src"
 IMAGE_UPLOADS = mkdir(f"{ROOT}/uploads")
 
-# root config folder
+IMAGE_TYPES = ("jpg","png","jpeg","bmp","svg")
+
+
+# Various config files
 root_config_folder = 'configs'
-FIRMWARE_CONF:str = mkdir(f"{root_config_folder}/firmware_cfg.toml")
-DB_CONFIG:str = mkdir(f"{root_config_folder}/db_cfg.toml")
-CALIBRATION_CONFIG = mkdir(f"{root_config_folder}/calibration_cfg.toml")
+FIRMWARE_CONF:str = f"{root_config_folder}/firmware_cfg.toml"
+DB_CONFIG:str = f"{root_config_folder}/db_cfg.toml"
 
 
 # Various Image folders
 root_image_folder = 'images'
-blocked_images_folder = mkdir(f"{root_image_folder}/{camera}/blocked")
-reference_images_folder = mkdir(f"{root_image_folder}/{camera}/reference")
-cloud_images_folder = mkdir(f"{root_image_folder}/{camera}/cloud")
-sky_images_folder = mkdir(f"{root_image_folder}/{camera}/sky")
-root_graph_folder = mkdir('Graphs')
+blocked_images_folder = mkdir(f"{root_image_folder}/{CAMERA}/blocked")
+reference_images_folder = mkdir(f"{root_image_folder}/{CAMERA}/reference")
+cloud_images_folder = mkdir(f"{root_image_folder}/{CAMERA}/cloud")
+sky_images_folder = mkdir(f"{root_image_folder}/{CAMERA}/sky")
 
 
 # Calibration image paths and settings  
 calibration_folder = "calibration"
-calibration_images = mkdir(f"{calibration_folder}/trainers")
-camera_matrices = mkdir(f"{calibration_folder}/matrices")
-undistorted_calibration_images = mkdir(f"{calibration_folder}/undistorted")
-distorted_calibration_images = mkdir(f"{calibration_folder}/distorted")
+camera_matrices = mkdir(f"{calibration_folder}/{CAMERA}/matrices")
+training_calibration_images = mkdir(f"{calibration_folder}/{CAMERA}/trainers")
+undistorted_calibration_images = mkdir(f"{calibration_folder}/{CAMERA}/undistorted")
+distorted_calibration_images = mkdir(f"{calibration_folder}/{CAMERA}/distorted")
+CALIBRATION_CONFIG = f"{calibration_folder}/{CAMERA}/calibration_cfg.toml"
+
+
+# Graphing paths
+root_graph_folder = mkdir('Graphs')
 
 
 # If debug is True, print. Otherwise, do nothing.
@@ -116,10 +126,10 @@ def load_toml(file_path:str) -> Dict:
             toml_data = toml.load(file)
             if not toml_data: return None
     except FileNotFoundError:
-        print(f"Error: File '{file_path}' not found.")
+        debug(f"Error: File '{file_path}' not found.")
         return None
     except toml.TomlDecodeError as e:
-        print(f"Error decoding TOML file: {e}")
+        debug(f"Error decoding TOML file: {e}")
         return None
 
     return toml_data

@@ -133,7 +133,7 @@ def __filetype_match(name:str) -> str | None:
 
 def calibrate(image_name: str, cam: Camera) -> None:
     calibration_image_folder = cam.training_calibration_images
-    print(calibration_image_folder)
+    # print(calibration_image_folder)
     config = cam.CALIBRATION_CONFIG
     if not __has_filetype(image_name):
         filetype = __filetype_match

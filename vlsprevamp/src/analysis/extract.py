@@ -163,17 +163,17 @@ def __check_distribution(data: NDArray, label: str, significance_level: float = 
         results[dist_name] = p_value
 
     # Print the results
-    print(f"Distribution Test Results - {label}")
+    debug(f"Distribution Test Results - {label}")
     for dist_name, p_value in results.items():
-        print(f"{dist_name}: p-value = {p_value:.4f} {'<-- Good Fit' if p_value > significance_level else '<-- Poor Fit'}")
+        debug(f"{dist_name}: p-value = {p_value:.4f} {'<-- Good Fit' if p_value > significance_level else '<-- Poor Fit'}")
 
     return results
 
 def identify_best_distribution(results):
     sorted_results = sorted(results.items(), key=lambda x: x[1], reverse=True)
-    print("\nDistribution ranking:")
+    debug("\nDistribution ranking:")
     for i, (dist_name, p_value) in enumerate(sorted_results):
-        print(f"{i+1}. {dist_name} (p-value = {p_value:.4f})")
+        debug(f"{i+1}. {dist_name} (p-value = {p_value:.4f})")
 
 def get_channel_info_initial(array: NDArray) -> NamedTuple:
     mean = np.mean(array, axis = 0)
@@ -190,7 +190,6 @@ if __name__ == "__main__":
     cam = Camera(camera_model.OV5640)
 
     tag:Colour_Tag = Colour_Tag.match('HSV')
-    print(tag.value)
 
     sky = get_nonblack_all(cam.sky_images_folder, tag)
     cloud = get_nonblack_all(cam.cloud_images_folder, tag)

@@ -17,6 +17,10 @@ def update() -> Response:
     """
     Handler for the api/update route on the server.
     """
+    ESPMAC = HEADERS.ESP_MAC.value
+    ESPVER = HEADERS.ESP_VERSION.value
+    ESPSHA = HEADERS.ESP_SHA256.value
+
     try:
         err = header_check(request, ('X-esp32-sta-mac', 'X-esp32-version', 'X-esp32-sketch-sha256'))
         if not err: return err
@@ -45,12 +49,15 @@ def reading() -> Response:
     """
     Handler for reading the /reading route on the server.
     """
+    MAH = HEADERS.MACADDRESS.value
+    TSH =HEADERS.TIMESTAMP.value
     try:
-        err = header_check(request, ('MAC-Address', 'timestamp'))
-        if not err: return err
 
-        timestamp = request.headers.get('timestamp')
-        mac = request.headers.get('MAC-Address')
+        err = header_check(request.headers, (MAH, TSH))
+        if err is not None:return err
+
+        timestamp = request.headers.get(TSH)
+        mac = request.headers.get(MAH)
 
         t = request.args.get("temperature")
         h = request.args.get("humidity")
@@ -82,12 +89,15 @@ def status() -> Response:
     Handler for the /status route on the server
     """
     valid = ("1","0")
+    MAH = HEADERS.MACADDRESS.value
+    TSH =HEADERS.TIMESTAMP.value
     try:
-        err = header_check(request, ('MAC-Address', 'timestamp'))
-        if not err: return err
 
-        timestamp = request.headers.get('timestamp')
-        mac = request.headers.get('MAC-Address')
+        err = header_check(request.headers, (MAH, TSH))
+        if err is not None:return err
+
+        timestamp = request.headers.get(TSH)
+        mac = request.headers.get(MAH)
 
         sht = request.args.get('sht')
         bmp = request.args.get('bmp')
@@ -110,12 +120,15 @@ def images() -> Response:
     """
     Handler for the /images in the server.
     """
+    MAH = HEADERS.MACADDRESS.value
+    TSH =HEADERS.TIMESTAMP.value
     try:
-        err = header_check(request, ('MAC-Address', 'timestamp'))
-        if not err: return err
 
-        timestamp = request.headers.get('timestamp')
-        mac = request.headers.get('MAC-Address')
+        err = header_check(request.headers, (MAH, TSH))
+        if err is not None:return err
+
+        timestamp = request.headers.get(TSH)
+        mac = request.headers.get(MAH)
         image_raw_bytes = request.get_data()  #get the whole body
         # Assume the timestamp is already formattedon board.
         # Create a filename based on the timestamp
@@ -132,7 +145,6 @@ def images() -> Response:
         return jsonify({"message": "Image saved successfully", "filename": filename}), 200
 
     except Exception as e:
-        print(e)
         return jsonify({"error": str(e)}), 500
 
 

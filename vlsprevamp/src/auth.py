@@ -34,7 +34,7 @@ def login():
                 flash("User was not found.", category = "error")
                 return render_template("login.html", user = current_user)
             
-            print("We got the user!")
+            # print("We got the user!")
             correct = check_password_hash(user.get_password(), password)
             if not correct:
                 flash("Incorrect email/password combination.", category = "error")

@@ -122,7 +122,7 @@ class DeviceService(Service):
             conn.commit()
             #debug("Updated database record!")
         except mysql.Error as e:
-            print(f"Couldn't update device name -> {e}")
+            debug(f"Couldn't update device name -> {e}")
 
         finally:
             if cursor:

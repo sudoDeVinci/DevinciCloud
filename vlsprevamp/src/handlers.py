@@ -1,6 +1,20 @@
 from flask import Blueprint, Request, request, Response, render_template, make_response, send_file,jsonify, flash
 from src.config import *
 from src.db.Services import *
+from werkzeug.datastructures import Headers
+
+class HEADERS(Enum):
+    """
+    Expected Headers to the /api route from esp devices.
+    """
+    MACADDRESS = 'Mac-Address'
+    TIMESTAMP = 'Timestamp'
+    CONTENTTYPE = 'Content-Type'
+    USERAGENT = 'User-Agent'
+    
+    ESP_MAC = 'X-esp32-sta-mac'
+    ESP_VERSION = 'X-esp32-version'
+    ESP_SHA256 = 'X-esp32-sketch-sha256'
 
 
 def mac_filter(mac:str) -> bool:
@@ -59,18 +73,23 @@ def timestamp_to_path(timestamp:str) -> str:
     return timestamp
 
 
-def header_check(request: Request, headers: Tuple[str]) -> Request | None:
+def header_check(req_headers: Headers, headers: Tuple[str]) -> Request | None:
     """
     Check for header existence and apply MAC filter.
     """
-    missing_headers = [header for header in headers if request.headers.get(header) is None]
+    missing_headers = [header for header in headers if req_headers.get(header) is None]
     if missing_headers:
         return jsonify({"error": f"Missing headers: {', '.join(missing_headers)}"}), 400
 
-    mac_headers = {'MAC-Address', 'X-esp32-sta-mac'}
-    mac_header = mac_headers.intersection(headers)
-    if mac_header:
-        if mac_filter(mac_header[0]): return jsonify({"error": "Unauthorized"}), 401
+    mac_headers = {HEADERS.MACADDRESS.value, HEADERS.ESP_MAC.value}
+    mac_header = list(mac_headers.intersection(headers))
+    if len(mac_header) > 1:
+        return jsonify({"error": f"Incorrect header fields: {', '.join(missing_headers)}"}), 400
+    
+    if len(mac_header) == 1:
+        # print(f"Is the mac {req_headers.get(mac_header[0])} in the thing? - {not mac_filter(req_headers.get(mac_header[0]))}")
+        if mac_filter(req_headers.get(mac_header[0])):
+            return jsonify({"error": "Unauthorized"}), 401
 
     return None
 

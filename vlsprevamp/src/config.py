@@ -87,9 +87,9 @@ CAMERA:str = camera_model['IPHONE13MINI'].value
 
 
 # For typing, these are inexact because out memory layout differences such as between Mat and UMat
-type Mat = cv2.Mat
-type Matlike = cv2.typing.MatLike
-type NDArray = numpy.typing.NDArray[any]
+Mat = cv2.Mat
+Matlike = cv2.typing.MatLike
+NDArray = numpy.typing.NDArray[any]
 
 
 # Ensure path exists then return it.
@@ -104,13 +104,12 @@ def mkdir(folder:str) -> str:
 ROOT = f"{os.getcwd()}/src"
 IMAGE_UPLOADS = mkdir(f"{ROOT}/uploads")
 
-IMAGE_TYPES = ("jpg","png","jpeg","bmp","svg")
-
 # Various config files
-root_config_folder = mkdir('configs')
+root_config_folder = mkdir(f'{ROOT}/configs')
 FIRMWARE_CONF:str = f"{root_config_folder}/firmware_cfg.toml"
 DB_CONFIG:str = f"{root_config_folder}/db_cfg.toml"
 
+IMAGE_TYPES = ("jpg","png","jpeg","bmp","svg")
 
 # If debug is True, print. Otherwise, do nothing.
 DEBUG:bool = True

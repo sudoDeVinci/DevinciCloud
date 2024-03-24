@@ -1,3 +1,5 @@
+So i have this script to define my schema for my db:
+
 import mysql.connector as mysql
 from src.config import debug
 
@@ -42,7 +44,7 @@ def apply(mydb:mysql.MySQLConnection):
     # Create status table
     myCursor.execute("""
         CREATE TABLE IF NOT EXISTS Status(
-            MAC VARCHAR(25) PRIMARY KEY,
+            MAC VARCHAR(25),
             SHT BOOLEAN NOT NULL,
             BMP BOOLEAN NOT NULL,
             CAM BOOLEAN NOT NULL,
@@ -76,3 +78,32 @@ def apply(mydb:mysql.MySQLConnection):
 
     # Commit
     mydb.commit()
+
+
+and I use a function like this to update my Services :
+
+def update(MAC:str, timestamp:str, sht:bool, bmp:bool, cam:bool, wifi:bool = True) -> None:
+        conn = Manager.get_conn()
+        if not cursor:
+            debug("No database connection.")
+            return None
+        update_string = "UPDATE Status SET SHT=%s, BMP=%s, CAM=%s, WIFI=%s, timestamp=%s WHERE MAC=%s;"
+
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                update_string, (sht, bmp, cam, wifi, timestamp, MAC)
+            )
+
+            conn.commit()
+        
+        except mysql.Error as e:
+            debug(f"Couldn't update sensor status record -> {e}")
+
+        finally:
+            if cursor: cursor.close()
+
+
+but when I run it, I get:
+
+"Couldn't insert sensor status record -> 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`weather`.`Status`, CONSTRAINT `Status_ibfk_1` FOREIGN KEY (`MAC`) REFERENCES `Devices` (`MAC`))"

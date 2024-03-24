@@ -73,10 +73,7 @@ class Manager:
             return None
 
         conf = toml_data.get('mysql', {})
-        return {'host': conf.get('host'),
-                'user': conf.get('user'),
-                'port': conf.get('port'),
-                'pass': conf.get('pass')}
+        return conf
 
 
     @staticmethod

@@ -38,7 +38,7 @@ class DeviceService(Service):
     def get_all() -> List[DeviceEntity]:
         query_string = "SELECT * FROM Devices;"
         devices = []
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             cursor.execute(query_string)
@@ -67,7 +67,7 @@ class DeviceService(Service):
     def get(MAC:str) -> DeviceEntity | None:
         query_string = "SELECT * FROM Devices WHERE MAC=%s LIMIT 1;"
         device = None
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             cursor.execute(query_string, (MAC,))
@@ -94,7 +94,7 @@ class DeviceService(Service):
     @staticmethod
     def add(MAC, name, dev_model, cam_model, altitude, latitude, longitude) -> None:
         conn = Manager.get_conn()
-
+        cursor = None
         # Insert records into the database.
         insert_string = "INSERT INTO Devices VALUES(%s, %s, %s, %s, %s, %s, %s);"
 
@@ -115,7 +115,8 @@ class DeviceService(Service):
     @staticmethod
     def update(MAC:str, name:str) -> None:
         conn = Manager.get_conn()
-        update_string = "UPDATE Devices SET name=%s WHERE MAC=%s;";
+        update_string = "UPDATE Devices SET name=%s WHERE MAC=%s;"
+        cursor = None
         try:
             cursor = conn.cursor()
             cursor.execute(update_string, (name, MAC))
@@ -131,7 +132,7 @@ class DeviceService(Service):
     @staticmethod
     def exists(MAC:str) -> bool:
         query_string = "SELECT * FROM Devices WHERE MAC=%s LIMIT 1;"
-
+        cursor = None
         # If no device is retrieved, return False.
         device:bool = False
 
@@ -155,7 +156,7 @@ class ReadingService(Service):
     def get_all() -> List[ReadingEntity]:
         query_string = "SELECT * FROM Readings;"
         readings = []
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             cursor.execute(query_string)
@@ -184,7 +185,7 @@ class ReadingService(Service):
     def get(MAC:str, timestamp:str) -> ReadingEntity | None:
         query_string = "SELECT * FROM Readings WHERE timestamp=%s AND MAC=%s LIMIT 1;"
         reading = None
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             cursor.execute(
@@ -215,6 +216,7 @@ class ReadingService(Service):
     def add(MAC:str, temp:float, hum:float, pres:float, dew:float, timestamp:str, filepath:str = "") -> None:
         conn = Manager.get_conn()
         insert_string = "INSERT INTO Readings VALUES(%s, %s, %s, %s, %s, %s, %s);"
+        cursor = None
         try:
             cursor = conn.cursor()
             cursor.execute(
@@ -233,7 +235,7 @@ class ReadingService(Service):
     def update_path(MAC:str, timestamp:str, filepath:str):
         conn = Manager.get_conn()
         update_string = "UPDATE Readings SET filepath=%s WHERE MAC=%s AND timestamp=%s;"
-
+        cursor = None
         try:
             cursor = conn.cursor()
             cursor.execute(
@@ -252,7 +254,7 @@ class ReadingService(Service):
     def update_readings(MAC:str, temp:float, hum:float, pres:float, dew:float, timestamp:str):
         conn = Manager.get_conn()
         update_string = "UPDATE Readings SET temperature=%s, relative_humidity=%s,pressure=%s,dewpoint=%s WHERE MAC=%s AND timestamp=%s;"
-
+        cursor = None
         try:
             cursor = conn.cursor()
             cursor.execute(
@@ -271,7 +273,7 @@ class ReadingService(Service):
     def exists(MAC:str, timestamp:str) -> bool:
         query_string = "SELECT * FROM Readings WHERE timestamp=%s AND MAC=%s LIMIT 1;"
         reading:bool = False
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             cursor.execute(
@@ -294,7 +296,7 @@ class StatusService(Service):
     def get_all() -> List[SensorEntity]:
         query_string = "SELECT * FROM Status;"
         statuses = []
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             cursor.execute(query_string)
@@ -322,7 +324,7 @@ class StatusService(Service):
     def get(MAC:str) -> SensorEntity | None:
         query_string = "SELECT * FROM Status WHERE MAC=%s LIMIT 1;"
         status = None
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             cursor.execute(query_string, (MAC, ))
@@ -350,6 +352,7 @@ class StatusService(Service):
     def add(MAC:str, timestamp:str, sht:bool, bmp:bool, cam:bool, wifi:bool = True) -> None:
         conn = Manager.get_conn()
         insert_string = "INSERT INTO Status VALUES(%s, %s, %s, %s, %s, %s);"
+        cursor = None
         try:
             cursor = conn.cursor()
             cursor.execute(
@@ -367,7 +370,8 @@ class StatusService(Service):
     @staticmethod
     def update(MAC:str, timestamp:str, sht:bool, bmp:bool, cam:bool, wifi:bool = True) -> None:
         conn = Manager.get_conn()
-        if not cursor:
+        cursor = None
+        if not conn:
             debug("No database connection.")
             return None
         update_string = "UPDATE Status SET SHT=%s, BMP=%s, CAM=%s, WIFI=%s, timestamp=%s WHERE MAC=%s;"
@@ -390,7 +394,7 @@ class StatusService(Service):
     def exists(MAC:str) -> bool:
         query_string = "SELECT * FROM Status WHERE MAC=%s LIMIT 1;"
         stats:bool = False
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             if not cursor:
@@ -414,7 +418,7 @@ class LocationService(Service):
     def country_exists(region:str) -> bool:
         query_string = "SELECT * FROM Locations WHERE country=%s;"
         location = False
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             if not cursor:
@@ -438,7 +442,7 @@ class LocationService(Service):
     def region_exists(region:str) -> bool:
         query_string = "SELECT * FROM Locations WHERE region=%s;"
         location = False
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             if not cursor:
@@ -463,7 +467,7 @@ class LocationService(Service):
     def city_exists(city:str) -> bool:
         query_string = "SELECT * FROM Locations WHERE city=%s;"
         location = False
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             if not cursor:
@@ -487,6 +491,7 @@ class LocationService(Service):
     def exists(latitude:float, longitude:float) -> bool:
         query_string = "SELECT * FROM Locations WHERE latitude=%s AND longitude=%s LIMIT 1;"
         location = False
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             if not cursor:
@@ -511,7 +516,7 @@ class LocationService(Service):
     def get_all() -> List[LocationEntity]:
         query_string = "SELECT * FROM Locations;"
         locs = []
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             if not cursor:
@@ -540,7 +545,7 @@ class LocationService(Service):
     def get(latitude:float, longitude:float) -> LocationEntity:
         query_string = "SELECT * FROM Locations WHERE latitude=%s AND longitude=%s LIMIT 1;"
         location = None
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             if not cursor:
@@ -571,7 +576,7 @@ class LocationService(Service):
     def get_city(city:str) -> List[LocationEntity]:
         query_string = "SELECT * FROM Locations WHERE city=%s;"
         locs = []
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             if not cursor:
@@ -602,7 +607,7 @@ class LocationService(Service):
     def get_region(region:str) -> List[LocationEntity]:
         query_string = "SELECT * FROM Locations WHERE region=%s;"
         locs = []
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             if not cursor:
@@ -633,7 +638,7 @@ class LocationService(Service):
     def get_country(country:str) -> List[LocationEntity]:
         query_string = "SELECT * FROM Locations WHERE country=%s;"
         locs = []
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             if not cursor:
@@ -667,6 +672,7 @@ class UserService(Service):
     def get_all() -> List[UserEntity]:
         query_string = "SELECT * FROM Users;"
         users = []
+        cursor = None
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
@@ -698,6 +704,7 @@ class UserService(Service):
     def get_user(userID: str) -> UserEntity | None:
         query_string = "SELECT * FROM Users WHERE ID=%s LIMIT 1;"
         user = None
+        cursor = None
 
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
@@ -728,7 +735,7 @@ class UserService(Service):
     def get(email: str, password: str = None) -> UserEntity | None:
         query_string = "SELECT * FROM Users WHERE email=%s LIMIT 1;" if password is None else "SELECT * FROM Users WHERE email=%s AND password=%s LIMIT 1;"
         user = None
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             if not cursor:
@@ -761,6 +768,7 @@ class UserService(Service):
     @staticmethod
     def add(name: str, email:str, password:str, role: Role) -> None:
         conn = Manager.get_conn()
+        cursor = None
         if not conn:
                 debug("No database connection.")
                 return None
@@ -794,7 +802,7 @@ class UserService(Service):
     def exists(email:str, password: str = None) -> bool:
         query_string = "SELECT * FROM Users WHERE email=%s LIMIT 1;" if not password else "SELECT * FROM Users WHERE email=%s AND password=%s LIMIT 1;"
         user:bool = False
-
+        cursor = None
         try:
             cursor = Manager.get_conn().cursor(dictionary=True)
             if not cursor:

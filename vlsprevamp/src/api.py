@@ -50,7 +50,7 @@ def reading() -> Response:
     Handler for reading the /reading route on the server.
     """
     MAH = HEADERS.MACADDRESS.value
-    TSH =HEADERS.TIMESTAMP.value
+    TSH = HEADERS.TIMESTAMP.value
     try:
 
         err = header_check(request.headers, (MAH, TSH))
@@ -59,21 +59,29 @@ def reading() -> Response:
         timestamp = request.headers.get(TSH)
         mac = request.headers.get(MAH)
 
-        t = request.args.get("temperature")
-        h = request.args.get("humidity")
-        p = request.args.get("pressure")
-        d = request.args.get("dewpoint")
+        readings = [request.args.get("temperature"),
+                    request.args.get("humidity"),
+                    request.args.get("pressure"),
+                    request.args.get("dewpoint")]
 
-        if t is None or h is None or p is None or d is None:
+        if None in readings:
             return jsonify({"error": "Missing values in readings"}), 400
         
         out:dict = {}
 
-        if t == "None" or h == "None" or p == "None" or d == "None":
+        if "None" in readings:
             out = {"message": "Some missing values but values received"} 
         else:
             out = {"message": "Thanks for the readings!"}
 
+        for index, reading in enumerate(readings):
+            try:
+                readings[index] = float(reading)
+            except Exception:
+                readings[index] = -999.00
+
+        
+        t, h, p, d = readings
         if not ReadingService.exists(mac, timestamp): ReadingService.add(mac, t, h, p, d, timestamp)
         else: ReadingService.update_readings(mac, t, h, p, d, timestamp)
 
@@ -81,6 +89,7 @@ def reading() -> Response:
         
 
     except Exception as e:
+        debug(e)
         return jsonify({"error": str(e)}), 500
 
 @api.route("/status", methods = ['GET'])
@@ -115,7 +124,7 @@ def status() -> Response:
         return jsonify({"error": str(e)}), 500
 
 
-@api.route("/images", methods = ['GET'])
+@api.route("/images", methods = ['POST'])
 def images() -> Response:
     """
     Handler for the /images in the server.

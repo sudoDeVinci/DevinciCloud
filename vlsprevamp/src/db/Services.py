@@ -726,7 +726,7 @@ class UserService(Service):
 
     @staticmethod
     def get(email: str, password: str = None) -> UserEntity | None:
-        query_string = "SELECT * FROM Users WHERE email=%s LIMIT 1;" if not password else "SELECT * FROM Users WHERE email=%s AND password=%s LIMIT 1;"
+        query_string = "SELECT * FROM Users WHERE email=%s LIMIT 1;" if password is None else "SELECT * FROM Users WHERE email=%s AND password=%s LIMIT 1;"
         user = None
 
         try:
@@ -734,7 +734,8 @@ class UserService(Service):
             if not cursor:
                 debug("No database connection.")
                 return None
-            if not password:
+            
+            if password is None:
                 cursor.execute(query_string, (email, ))
             else:
                 cursor.execute(query_string, (email, password))

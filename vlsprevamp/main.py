@@ -9,6 +9,7 @@ from src.config import *
 app = create_app()
 
 if __name__ == "__main__":
+    from waitress import serve
 
     try:
         Manager.connect(drop_schema = False)
@@ -20,6 +21,6 @@ if __name__ == "__main__":
     except Exception as e:
         debug(e)
         
-    from waitress import serve
+    
     app.config['SECRET_KEY'] = 'AMOGUSdugamladufria'
     app.run(host="0.0.0.0", port = 8080)

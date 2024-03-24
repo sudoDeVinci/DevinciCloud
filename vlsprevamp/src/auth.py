@@ -15,16 +15,16 @@ def sign_up():
 
 @auth.route("/login", methods=['GET', 'POST'])
 def login():
-    #data = request.form
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
-        debug(f"Email: {email} and Password: {password}")
+        debug(f"Attempted login of Email: {email}")
+
         if not email or not password:
             flash("Fields cannot be empty.", category="error") 
             return render_template("login.html", user = current_user)
         
-        elif not UserService.exists(email):
+        if not UserService.exists(email):
             flash("No Account for that email found", category="error")
             return render_template("login.html", user = current_user)
         
@@ -41,6 +41,7 @@ def login():
                 return render_template("login.html", user = current_user)
 
             flash("Logged in Successfully!", category="success")
+            debug("Successful Login.")
             login_user(user, remember=True)
             return redirect(url_for("views.index"))
 

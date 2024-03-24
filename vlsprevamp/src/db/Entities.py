@@ -209,7 +209,7 @@ class UserEntity(Entity, UserMixin):
     __camera: Camera
 
     def __init__(self, id: str, name:str, email:str,
-                password:str, role:Role, camera: Camera) -> None:
+                password:str, role:Role, camera: Camera = None) -> None:
         self.__ID = id
         self.__name = name
         self.__email = email

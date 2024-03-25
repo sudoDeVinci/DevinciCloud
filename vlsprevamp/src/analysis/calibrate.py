@@ -122,14 +122,24 @@ def undistort(img:Matlike, cameraMatrix:Matlike, dist:Matlike, remapping:bool = 
     return undistorted
 
 def __has_filetype(name: str) -> bool:
+    """
+    Return true if the given filenme has an accepted image filteype suffix. 
+    """
     for filetype in IMAGE_TYPES:
         if name.endswith(f".{filetype}"): return True
     return False
 
 def __filetype_match(name:str) -> str | None:
+    """
+    Retun the filename of an image with a matching name to the one entered, but with the filetype suffix.
+    """
     for filetype in IMAGE_TYPES:
         if os.path.exists(f"{name}.{filetype}"): return filetype
     return None
+
+def __load_matrix(cam: Camera, name: str) -> Dict[str, Any] | None:
+    if not name.endswith('.toml'): name = f"{name}.toml"
+    return load_toml(f"{cam.camera_matrices}/{name}")
 
 
 def calibrate(image_name: str, cam: Camera) -> None:
@@ -154,9 +164,23 @@ def calibrate(image_name: str, cam: Camera) -> None:
     __write_calibration_data(cam, cameraMatrix, dist, rvecs, tvecs, timestamp)
 
     distorted = cv2.imread(f"{cam.distorted_calibration_images}/{image_name}")
-    undistorted = undistort(distorted, cameraMatrix, dist, remapping=False, cropping=False)
+    undistorted = undistort(distorted, cameraMatrix, dist, remapping=True, cropping=False)
     cv2.imwrite(f"{cam.undistorted_calibration_images}/{timestamp}__{image_name}", undistorted)
 
 if __name__ == "__main__":
-    model = Camera(camera_model.IPHONE13MINI)
-    calibrate("can.jpg", model)
+    cam = Camera(camera_model.IPHONE13MINI)
+    img = 'sky.jpg'
+    timestamp = "2024-03-25_04-39-35"
+
+    matrix = __load_matrix(cam, timestamp)
+    cmat = np.asarray(matrix['matrix'])
+    dist = np.asarray(matrix['distCoeff'])
+    rvecs = np.asarray(matrix['rvecs'])
+    tvecs = np.asarray(matrix['tvecs'])
+
+    distorted = cv2.imread(f"{cam.distorted_calibration_images}/{img}")
+    undistorted = undistort(distorted, cmat, dist, remapping=False, cropping=False)
+    cv2.imwrite(f"{cam.undistorted_calibration_images}/{timestamp}__{img}", undistorted)
+
+
+

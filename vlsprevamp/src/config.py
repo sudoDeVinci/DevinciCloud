@@ -6,7 +6,7 @@ from gc import collect
 import functools
 from datetime import datetime
 from enum import Enum
-from typing import List, Sequence, Tuple, Dict, NamedTuple
+from typing import List, Sequence, Tuple, Dict, NamedTuple, Any
 import toml
 
 class camera_model(Enum):
@@ -90,6 +90,7 @@ CAMERA:str = camera_model['OV5640'].value
 Mat = cv2.Mat
 Matlike = cv2.typing.MatLike
 NDArray = numpy.typing.NDArray[any]
+intp = np.intp
 
 
 # Ensure path exists then return it.
@@ -134,7 +135,7 @@ def write_toml(data:Dict, path:str) -> None:
         debug(f"Error writing to TOML file: {e}")
 
 
-def load_toml(file_path:str) -> Dict:
+def load_toml(file_path:str) -> Dict[str , Any] | None:
     """ 
     Attempt to load a toml file as a dictionary.
     """

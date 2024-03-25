@@ -86,10 +86,15 @@ class Colour_Tag(Enum):
         return cls.UNKNOWN
     
 class ChannelBound(NamedTuple):
+    """
+    A Representation of bounds set on 
+    """
     mean: float
     std: float
     lower_bound: int
     upper_bound: int
+    channel: str
+    tag: Colour_Tag
 
 
 def count(xyz_sk: NDArray) -> NDArray:
@@ -175,13 +180,13 @@ def identify_best_distribution(results):
     for i, (dist_name, p_value) in enumerate(sorted_results):
         debug(f"{i+1}. {dist_name} (p-value = {p_value:.4f})")
 
-def get_channel_info_initial(array: NDArray) -> NamedTuple:
+def get_channel_info_initial(array: NDArray, label,colour_tag: Colour_Tag) -> NamedTuple:
     mean = np.mean(array, axis = 0)
     std = np.std(array, axis = 0)
     lb = mean - (2 * std)
     ub = mean + (2 * std)
 
-    return ChannelBound(mean, std, lb, ub)
+    return ChannelBound(mean, std, lb, ub, label, colour_tag)
 
 
 

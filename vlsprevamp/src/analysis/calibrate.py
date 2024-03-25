@@ -154,5 +154,5 @@ def calibrate(image_name: str, cam: Camera) -> None:
     cv2.imwrite(f"{cam.undistorted_calibration_images}/{image_name}", undistorted)
 
 if __name__ == "__main__":
-    model = Camera(camera_model.OV5640)
-    calibrate("cloudy.jpg", model)
+    model = Camera(camera_model.IPHONE13MINI)
+    calibrate("can", model)

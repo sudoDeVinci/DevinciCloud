@@ -39,6 +39,13 @@ def __load_config(config: str) -> Dict | None:
         return None
     return confdict
 
+def __current_time_as_filename() -> str:
+    """
+    Generate current time as a filename string in the format: YYYY-MM-DD_HH-MM-SS
+    """
+    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    return current_time
+
 def __calibrate(calibration_image_folder: str, confdict: Dict) -> Tuple[Matlike, Matlike, Sequence[Matlike], Sequence[Matlike]] | None:
     """
     Calculate camera matrix data via calibration with chessboard images.
@@ -81,7 +88,7 @@ def __calibrate(calibration_image_folder: str, confdict: Dict) -> Tuple[Matlike,
 
     return (cameraMatrix, dist, rvecs, tvecs)
 
-def __write_calibration_data(cam:Camera, cameraMatrix:Matlike, dist:Matlike, rvecs:Sequence[Matlike] = None, tvecs:Sequence[Matlike] = None) -> None:
+def __write_calibration_data(cam:Camera, cameraMatrix:Matlike, dist:Matlike, rvecs:Sequence[Matlike] = None, tvecs:Sequence[Matlike] = None, timestamp: str = __current_time_as_filename()) -> None:
     """
     Write camera calibration data to toml file.
     """
@@ -91,7 +98,7 @@ def __write_calibration_data(cam:Camera, cameraMatrix:Matlike, dist:Matlike, rve
             'rvecs': np.asarray(rvecs).tolist(),
             'tvecs': np.asarray(tvecs).tolist()}
 
-    write_toml(data, f"{cam.camera_matrices}/{__current_time_as_filename()}.toml")
+    write_toml(data, f"{cam.camera_matrices}/{timestamp}.toml")
 
 def undistort(img:Matlike, cameraMatrix:Matlike, dist:Matlike, remapping:bool = True, cropping:bool = True) -> Matlike:
     """
@@ -114,13 +121,6 @@ def undistort(img:Matlike, cameraMatrix:Matlike, dist:Matlike, remapping:bool = 
     
     return undistorted
 
-def __current_time_as_filename() -> str:
-    """
-    Generate current time as a filename string in the format: YYYY-MM-DD_HH-MM-SS
-    """
-    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    return current_time
-
 def __has_filetype(name: str) -> bool:
     for filetype in IMAGE_TYPES:
         if name.endswith(f".{filetype}"): return True
@@ -137,7 +137,7 @@ def calibrate(image_name: str, cam: Camera) -> None:
     # print(calibration_image_folder)
     config = cam.CALIBRATION_CONFIG
     if not __has_filetype(image_name):
-        filetype = __filetype_match
+        filetype = __filetype_match(image_name)
         if filetype is not None: image_name = f"{image_name}.{filetype}"
         else:
             debug(f"Image {image_name}.{filetype} does not exist.") 
@@ -148,11 +148,15 @@ def calibrate(image_name: str, cam: Camera) -> None:
     calibration_vals = __calibrate(calibration_image_folder, confdict)
     if not calibration_vals: return None
     cameraMatrix, dist, rvecs, tvecs = calibration_vals
-    __write_calibration_data(cam, cameraMatrix, dist, rvecs, tvecs)
+
+    timestamp = __current_time_as_filename()
+
+    __write_calibration_data(cam, cameraMatrix, dist, rvecs, tvecs, timestamp)
+
     distorted = cv2.imread(f"{cam.distorted_calibration_images}/{image_name}")
-    undistorted = undistort(distorted, cameraMatrix, dist, remapping=True, cropping=False)
-    cv2.imwrite(f"{cam.undistorted_calibration_images}/{image_name}", undistorted)
+    undistorted = undistort(distorted, cameraMatrix, dist, remapping=False, cropping=False)
+    cv2.imwrite(f"{cam.undistorted_calibration_images}/{timestamp}__{image_name}", undistorted)
 
 if __name__ == "__main__":
     model = Camera(camera_model.IPHONE13MINI)
-    calibrate("can", model)
+    calibrate("can.jpg", model)

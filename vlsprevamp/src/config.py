@@ -66,7 +66,7 @@ class Camera:
         self.training_calibration_images = self.mkdir(f"{self.calibration_folder}/{Model.value}/trainers")
         self.undistorted_calibration_images = self.mkdir(f"{self.calibration_folder}/{Model.value}/undistorted")
         self.distorted_calibration_images = self.mkdir(f"{self.calibration_folder}/{Model.value}/distorted")
-        self.CALIBRATION_CONFIG = self.mkdir(f"{self.calibration_folder}/{Model.value}/calibration_cfg.toml")
+        self.CALIBRATION_CONFIG = f"{self.calibration_folder}/{Model.value}/calibration_cfg.toml"
 
         # Various config files
         root_config_folder = 'configs'
@@ -83,7 +83,7 @@ class Camera:
     
 
 # Camera model for current visualization
-CAMERA:str = camera_model['IPHONE13MINI'].value
+CAMERA:str = camera_model['OV5640'].value
 
 
 # For typing, these are inexact because out memory layout differences such as between Mat and UMat

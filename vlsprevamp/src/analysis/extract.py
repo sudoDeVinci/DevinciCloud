@@ -194,7 +194,7 @@ if __name__ == "__main__":
 
     cam = Camera(camera_model.OV5640)
 
-    tag:Colour_Tag = Colour_Tag.match('HSV')
+    tag:Colour_Tag = Colour_Tag.HSV
 
     sky = get_nonblack_all(cam.sky_images_folder, tag)
     cloud = get_nonblack_all(cam.cloud_images_folder, tag)
@@ -206,6 +206,8 @@ if __name__ == "__main__":
     del cloud, sky
     
 
-    debug(f"{get_channel_info_initial(data_cloud[:, 0])}\n")
-    debug(f"{get_channel_info_initial(data_cloud[:, 1])}\n")
-    debug(f"{get_channel_info_initial(data_cloud[:, 2])}\n")
+    bound1 = (f"{get_channel_info_initial(data_cloud[:, 0], tag.value['components'][0], tag)}\n")
+    bound2 = (f"{get_channel_info_initial(data_cloud[:, 1], tag.value['components'][1], tag)}\n")
+    bound3 = (f"{get_channel_info_initial(data_cloud[:, 2], tag.value['components'][2], tag)}\n")
+
+    print("\n" + bound2)

@@ -1,5 +1,6 @@
 from src.analysis.extract import Colour_Tag, Matlike, NamedTuple, np, ChannelBound, get_nonblack_all, count, remove_outliers_iqr
 from src.config import *
+from sklearn.model_selection import KFold
 
 """
 The idea is such:
@@ -10,7 +11,31 @@ The idea is such:
 # Taking a matrix of size 5 as the kernel 
 KERNEL = np.ones((5, 5), np.uint8) 
 
+def separate_into_strata(image_paths: List[str]) -> List[Tuple[List[str], List[str]]]:
+    # Shuffle the list of image paths
+    np.random.shuffle(image_paths)
+
+    # Number of folds for cross-validation
+    n_folds = 5  # You can adjust this number as needed
+
+    # Initialize k-fold cross-validation
+    kf = KFold(n_splits=n_folds)
+
+    # Separate image paths into folds for cross-validation
+    fold_indices = []
+    for train_index, test_index in kf.split(image_paths):
+        train_paths = [image_paths[i] for i in train_index]
+        test_paths = [image_paths[i] for i in test_index]
+        fold_indices.append((train_paths, test_paths))
+    
+    return fold_indices
+
+
 def __colourspace_similarity_test(cam: Camera, colours: List[Colour_Tag]) -> None:
+    """
+    Return a dictionry of the jaccard similarities between sky and cloud colour channels
+    over various colour spaces for the provided dataset of a given camera model.
+    """
     result = {ctag.value['tag']: {
                         ctag.value['components'][0]: None,
                         ctag.value['components'][1]: None,
@@ -95,4 +120,10 @@ if __name__ == "__main__":
 
     result = __colourspace_similarity_test(cam, [Colour_Tag.HSV, Colour_Tag.YCRCB, Colour_Tag.RGB])
     for cspace in result:
-        debug(result[cspace])
+        debug("-----------------------------")
+        debug(f"| {cspace:<26}|")
+        debug("-----------------------------")
+        channels = result[cspace]
+        for channel in channels:
+            debug(f"| {channel:<15} || {channels[channel]:.4f} |")
+        debug(" ")

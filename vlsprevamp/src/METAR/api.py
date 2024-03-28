@@ -98,7 +98,7 @@ def write(data: str | Dict, path: str) -> None:
         debug(f"Error writing to JSON file: {e}")
 
 if __name__ == "__main__":
-    query = __query(archive=True, api_key='VOeVgaTHCcmuX4vuOS47tRLPEkOfPWTT', timestamp='2023-08-10')
+    query = __query(archive=True, api_key='', timestamp='2023-08-10')
     debug(query)
     data = get(query)
     write(data, "test.json")

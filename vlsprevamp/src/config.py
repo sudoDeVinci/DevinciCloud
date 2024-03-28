@@ -8,6 +8,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Sequence, Tuple, Dict, NamedTuple, Any
 import toml
+from multipledispatch import dispatch 
 
 class camera_model(Enum):
     """

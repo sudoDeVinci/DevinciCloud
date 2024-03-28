@@ -12,7 +12,7 @@ if __name__ == "__main__":
     from waitress import serve
 
     try:
-        Manager.connect(drop_schema = False)
+        Manager.connect()
         print(DB_CONFIG)
         if not DeviceService.exists("34:85:18:40:CD:8C"): DeviceService.add("34:85:18:40:CD:8C", "Home-ESP", "ESP32S3", "OV5640", 173.00, 56.853470, 14.824620)
         if not DeviceService.exists("34:85:18:41:EB:78"): DeviceService.add("34:85:18:41:EB:78", "Work-ESP", "ESP32S3", "OV5640", 173.00, 56.853470, 14.824620)

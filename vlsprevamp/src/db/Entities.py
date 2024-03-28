@@ -43,7 +43,7 @@ class Entity(ABC):
     def get_mac(self) -> str:
         return self.__MAC
     
-    def get_timetstamp(self) -> str:
+    def get_timestamp(self) -> str:
         return self.__timestamp
 
 class DeviceEntity(Entity):

@@ -14,6 +14,7 @@ class Manager:
         """
         Get database connection object to write to local db.
         """
+        if not Manager.__conn: Manager.__connect()
         return Manager.__conn
     
 
@@ -26,7 +27,7 @@ class Manager:
 
 
     @staticmethod
-    def connect(drop_schema:bool) -> None:
+    def connect(drop_schema:bool = False) -> None:
         """
         Connect to database specified in the 
         """

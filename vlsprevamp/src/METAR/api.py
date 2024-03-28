@@ -46,16 +46,21 @@ def __utc_timestamp() -> str:
     return datetime.now(UTC).replace(microsecond=0, tzinfo=None).isoformat()
 
 
-def __individual_query(api_key:str = API_KEY, version:float = 2.3,
-                    language:Locale = LOCALE, airport:Airport = Airport.VAXJO,
+def __query(archive:bool = False, api_key:str = API_KEY, version:float = 2.3,
+                    language:Locale = Locale.English, airport:Airport = Airport.VAXJO,
                     timestamp:str=None, human_readable:bool = False) -> str:
-    URL = "https://api.metar-taf.com/metar?"
+   
+    """
+    Query constructor for METAR api.
+    """
+
+    URL = "https://api.metar-taf.com/metar-archive?" if archive else "https://api.metar-taf.com/metar?"
     key = f"api_key={api_key}"
     v = f"v={version}"
     locale = f"locale={language.value}"
     id = f"id={airport.value}"
     test = f"test={int(human_readable)}"
-    time = f"time={timestamp}"
+    time = f"date={timestamp}" if archive else f"time={timestamp}"
 
     URL += f"{key}&{v}&{locale}&{id}"
     if timestamp: URL += f"&{time}"    
@@ -63,31 +68,22 @@ def __individual_query(api_key:str = API_KEY, version:float = 2.3,
     return URL
 
 
-def __archive_query(api_key:str = API_KEY, version:float = 2.3,
-                    language:Locale = LOCALE, airport:Airport = Airport.VAXJO,
-                    datestamp:str=None, human_readable:bool = False) -> str:
-    URL = "https://api.metar-taf.com/metar-archive?"
-    key = f"api_key={api_key}"
-    v = f"v={version}"
-    locale = f"locale={language.value}"
-    id = f"id={airport.value}"
-    test = f"test={int(human_readable)}"
-    time = f"date={datestamp}"
-
-    URL += f"{key}&{v}&{locale}&{id}"
-    if datestamp: URL += f"&{time}"    
-    if human_readable: URL += f"&{test}"
-    return URL
-
-
 def get(query: str) -> Dict[str, Any] | None:
+    """
+    Send a query to METAR api and receive json reply.
+    Return either json reply or None.
+    """
     reply = requests.get(query)
+    debug(reply.content)
     outjson = None
 
     try:
-        outjson = reply.json()
-        outjson = json.loads(outjson)
-    except requests.exceptions.JSONDecodeError | json.JSONDecodeError:
+        outjson = json.loads(reply.content)
+    except requests.exceptions.JSONDecodeError as e:
+        debug(e)
+        outjson = None
+    except json.decoder.JSONDecodeError as e:
+        debug(e)
         outjson = None
     
     return outjson
@@ -101,3 +97,8 @@ def write(data: str | Dict, path: str) -> None:
     except Exception as e:
         debug(f"Error writing to JSON file: {e}")
 
+if __name__ == "__main__":
+    query = __query(archive=True, api_key='VOeVgaTHCcmuX4vuOS47tRLPEkOfPWTT', timestamp='2023-08-10')
+    debug(query)
+    data = get(query)
+    write(data, "test.json")
